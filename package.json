@@ -41,5 +41,8 @@
     "hardhat": "^2.19.0",
     "hardhat-contract-sizer": "^2.10.0",
     "minimist": "^1.2.8"
+  },
+  "dependencies": {
+    "@nomicfoundation/edr-darwin-arm64": "^0.3.3"
   }
 }

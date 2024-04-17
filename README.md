@@ -84,5 +84,5 @@ With the following possible Arguments:
 
 Example command to run all contracts in localhost:
 ```sh
-npx run deploy-contracts -- --network localhost -membership -access -assets -brainstem -execution -validation
+npm run deploy-contracts -- --network localhost -membership -access -assets -brainstem -execution -validation
 ```

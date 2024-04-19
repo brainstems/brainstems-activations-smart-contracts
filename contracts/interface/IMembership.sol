@@ -21,10 +21,18 @@ interface IMembership {
 
     event EcosystemCreated(uint256 indexed id, Unit ecosystem);
     event CompanyCreated(uint256 indexed id, Unit company);
-    event MemberAdded(uint256 indexed ecosystemId, uint256 indexed memberId);
-    event MemberRemoved(uint256 indexed ecosystemId, uint256 indexed memberId);
-    event UserAdded(uint256 indexed ecosystemId, uint256 indexed memberId, address user);
-    event UserRemoved(uint256 indexed ecosystemId, uint256 indexed memberId, address user);
+    event BrainstemCreated(uint256 indexed id, Unit brainstem, uint256 ecosystemId);
+
+    event EcosystemCompanyAdded(uint256 indexed ecosystemId, uint256 indexed companyId);
+    event EcosystemCompanyRemoved(uint256 indexed ecosystemId, uint256 indexed companyId);
+    
+    event UserAdded(uint256 indexed companyId, address user);
+    event UserRemoved(uint256 indexed companyId, address user);
+
+    event BrainstemCompanyAdded(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed companyId);
+    event BrainstemCompanyRemoved(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed companyId);
+
+    event AssetRegistered(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed assetId);
 
     /**
      * @notice Registers an ecosystem in the contract.
@@ -34,47 +42,70 @@ interface IMembership {
 
     /**
      * @notice Registers a company in the contract.
-     * @param member object properties for the company.
+     * @param company object properties for the company.
      */
-    function createCompany(Unit calldata member) external;
+    function createCompany(Unit calldata company) external;
 
     /**
-     * @notice Attaches a Member to an Ecosystem.
-     * @param ecosystemId identifier for the ecosystem.
-     * @param memberId identifier for the member.
+     * @notice Registers a brainstem within an ecosystem in the contract.
+     * @param brainstem object properties for the brainstem.
      */
-    function addMember(uint256 ecosystemId, uint256 memberId) external;
+    function createBrainstem(Unit calldata brainstem, uint256 ecosystemId) external;
 
     /**
-     * @notice Removes a Member from an Ecosystem.
+     * @notice Attaches a Company to an Ecosystem.
      * @param ecosystemId identifier for the ecosystem.
-     * @param memberId identifier for the member.
+     * @param companyId identifier for the company.
      */
-    function removeMember(uint256 ecosystemId, uint256 memberId) external;
+    function addEcosystemCompany(uint256 ecosystemId, uint256 companyId) external;
+
+    /**
+     * @notice Removes a Company from an Ecosystem.
+     * @param ecosystemId identifier for the ecosystem.
+     * @param companyId identifier for the company.
+     */
+    function removeEcosystemCompany(uint256 ecosystemId, uint256 companyId) external;
 
     /**
      * @notice Adds a user to a company within an ecosystem.
-     * @param ecosystemId identifier for the ecosystem.
-     * @param memberId identifier for the member.
-     * @param user address of the user.
+     * @param companyId identifier for the company.
+     * @param users addresses of the users to add.
      */
-    function addUser(
-        uint256 ecosystemId,
-        uint256 memberId,
-        address user
+    function addUsers(
+        uint256 companyId,
+        address[] memory users
     ) external;
 
     /**
      * @notice Remove a user to a company within an ecosystem.
-     * @param ecosystemId identifier for the ecosystem.
-     * @param memberId identifier for the member.
-     * @param user address of the user.
+     * @param companyId identifier for the company.
+     * @param users addresses of the users.
      */
-    function removeUser(
-        uint256 ecosystemId,
-        uint256 memberId,
-        address user
+    function removeUsers(
+        uint256 companyId,
+        address[] memory users
     ) external;
+
+    /**
+     * @notice Attaches a Company to an Brainstem.
+     * @param ecosystemId identifier for the ecosystem.
+     * @param brainstemId identifier for the brainstem.
+     * @param companyId identifier for the company.
+     */
+    function addBrainstemCompany(uint256 ecosystemId, uint256 brainstemId, uint256 companyId) external;
+
+    /**
+     * @notice Removes a Company from an Brainstem.
+     * @param ecosystemId identifier for the ecosystem.
+     * @param brainstemId identifier for the brainstem.
+     * @param companyId identifier for the company.
+     */
+    function removeBrainstemCompany(uint256 ecosystemId, uint256 brainstemId, uint256 companyId) external;
+
+    /**
+     * @notice Binds an asset to a brainstem.
+     */
+    function registerAsset(uint256 ecosystemId, uint256 brainstemId, uint256 companyId, uint256 assetId) external;
 
     /**
      * @notice Returns the detailed ecosystem identified by the provided id.
@@ -87,12 +118,32 @@ interface IMembership {
     function getCompany(uint256 companyId) external view returns (Unit memory);
 
     /**
-     * @notice Returns the company of the user within the ecosystem.
+     * @notice Returns the detailed brainstem identified by the provided id.
      */
-    function getActiveUser(uint256 ecosystemId, uint256 memberId, address user) external view returns (bool);
+    function getBrainstem(uint256 brainstemId) external view returns (Unit memory);
 
     /**
-     * @notice Returns the company within the ecosystem.
+     * @notice Returns the list of associated brainstems for a given company in ecosystem.
      */
-    function getEcosystemCompanies(uint256 ecosystemId, uint256 memberId) external view returns (Unit memory);
+    function getCompanyAssociatedBrainstems(uint256 ecosystemId, uint256 companyId) external view returns (uint256[] memory);
+
+    /**
+     * @notice Returns if the given user belongs to a given company.
+     */
+    function userInCompany(uint256 companyId, address user) external view returns (bool);
+
+    /**
+     * @notice Returns if the given company belong to the given ecosystem.
+     */
+    function companyInEcosystem(uint256 ecosystemId, uint256 companyId) external view returns (Unit memory);
+    
+    /**
+     * @notice Returns if the given company is in the given brainstem.
+     */
+    function companyInBrainstem(uint256 brainstemId, uint256 companyId) external view returns (Unit memory);
+
+    /**
+     * @notice Returns if the given asset is in the given brainstem.
+     */
+    function assetInBrainstem(uint256 ecosystemId, uint256 brainstemId, uint256 assetId) external view returns (bool);
 }

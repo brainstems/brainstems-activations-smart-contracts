@@ -14,7 +14,7 @@ $$$$$$$  |$$ |  $$ |$$ |  $$ |$$$$$$\ $$ | \$$ |\$$$$$$  |  $$ |   $$$$$$$$\ $$ 
 pragma solidity ^0.8.7;
 
 interface IExecution {
-    function useAsset(uint256 assetId) external;
+    function useAsset(uint256 assetId, uint256 companyId, bytes memory data) external;
 
     function queryAssetUse(uint256 executionId) external;
 }

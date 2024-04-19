@@ -43,6 +43,7 @@
     "minimist": "^1.2.8"
   },
   "dependencies": {
-    "@nomicfoundation/edr-darwin-arm64": "^0.3.3"
+    "@nomicfoundation/edr-darwin-arm64": "^0.3.3",
+    "@openzeppelin/contracts": "^5.0.2"
   }
 }

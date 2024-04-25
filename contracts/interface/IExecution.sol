@@ -26,7 +26,7 @@ interface IExecution {
 
     event AssetUsed(uint256 indexed assetId, uint256 ecosystemId, uint256 brainstemId, uint256 indexed companyId, address executor, uint256 indexed executionId, bytes data);
 
-    function useAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external;
+    function useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external;
 
-    function queryAssetUse(uint256 assetId, uint256 executionId) external view returns (Execution memory);
+    function queryBrainstemAssetUse(uint256 assetId, uint256 executionId) external view returns (Execution memory);
 }

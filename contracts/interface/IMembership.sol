@@ -135,12 +135,12 @@ interface IMembership {
     /**
      * @notice Returns if the given company belong to the given ecosystem.
      */
-    function companyInEcosystem(uint256 ecosystemId, uint256 companyId) external view returns (Unit memory);
+    function companyInEcosystem(uint256 ecosystemId, uint256 companyId) external view returns (bool);
     
     /**
      * @notice Returns if the given company is in the given brainstem.
      */
-    function companyInBrainstem(uint256 brainstemId, uint256 companyId) external view returns (Unit memory);
+    function companyInBrainstem(uint256 brainstemId, uint256 companyId) external view returns (bool);
 
     /**
      * @notice Returns if the given asset is in the given brainstem.

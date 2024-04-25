@@ -14,21 +14,42 @@ $$$$$$$  |$$ |  $$ |$$ |  $$ |$$$$$$\ $$ | \$$ |\$$$$$$  |  $$ |   $$$$$$$$\ $$ 
 pragma solidity ^0.8.7;
 
 import "./interface/IExecution.sol";
+import "./interface/IAccess.sol";
+import "./interface/IMembership.sol";
+
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
 
-contract Execution is Initializable, IExecution {
-    mapping(uint256 => mapping(uint256 => Execution)) private assetExecutions;
-    mapping(uint256 => uint256) private assetExecutionId;
+contract Execution is 
+  Initializable,
+  IExecution,
+  AccessControlEnumerableUpgradeable
+{
+    mapping(uint256 => mapping(uint256 => Execution)) private assetBrainstemExecutions;
+    mapping(uint256 => uint256) private assetBrainstemExecutionId;
 
-    function initialize() public initializer {}
+    IAccess private _access;
+    IMembership private _membership;
 
-    function useAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external override {
-      // TODO: Check if asset exists.
+    function initialize(
+        address _admin
+    ) public initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+    }
 
-      // TODO: Check access for the asset and the user.
+    // TODO:
+    // - Allow updating the access control contract.
+    // - Allow updating the membership contract.
+
+    function useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external override {
+      require(_membership.userInCompany(companyId, msg.sender), "Execution: User is not part of the company.");
+      require(_membership.companyInBrainstem(brainstemId, companyId), "Execution: Company is not part of brainstem.");
+
+      AccessType hasAccess = _access.getEcosystemBrainstemAccess(assetId, ecosystemId, brainstemId);
+      require(hasAccess == AccessType.USAGE, "Execution: Brainstem does not have access to the asset.");
 
       Execution memory execution = Execution({
-        id: assetExecutionId[assetId],
+        id: assetBrainstemExecutionId[assetId],
         assetId: assetId,
         ecosystemId: ecosystemId,
         brainstemId: brainstemId,
@@ -37,13 +58,13 @@ contract Execution is Initializable, IExecution {
         data: data
       });
 
-      assetExecutions[assetId][assetExecutionId[assetId]] = execution;
-      assetExecutionId[assetId] += 1;
+      assetBrainstemExecutions[assetId][assetBrainstemExecutionId[assetId]] = execution;
+      assetBrainstemExecutionId[assetId] += 1;
 
       emit AssetUsed(assetId, ecosystemId, brainstemId, companyId, msg.sender, execution.id, data);
     }
 
-    function queryAssetUse(uint256 assetId, uint256 executionId) external view override returns (Execution memory) {
-      return assetExecutions[assetId][executionId];
+    function queryBrainstemAssetUse(uint256 assetId, uint256 executionId) external view override returns (Execution memory) {
+      return assetBrainstemExecutions[assetId][executionId];
     }
 }

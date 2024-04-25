@@ -13,12 +13,15 @@ $$$$$$$  |$$ |  $$ |$$ |  $$ |$$$$$$\ $$ | \$$ |\$$$$$$  |  $$ |   $$$$$$$$\ $$ 
 
 pragma solidity ^0.8.7;
 
-interface IAccess {
-    enum AccessType {
-        OWNER,
-        USAGE,
-        VALIDATION
-    }
+enum AccessType {
+    USAGE,
+    VALIDATION
+}
 
-    function updateAccess(uint256 assetId) external;
+interface IAccess {
+    
+
+    function updateEcosystemBrainstemAccess(uint256 assetId, uint256 ecosystem, uint256 brainstem, AccessType access) external;
+
+    function getEcosystemBrainstemAccess(uint256 assetId, uint256 ecosystem, uint256 brainstem) external view returns (AccessType);
 }

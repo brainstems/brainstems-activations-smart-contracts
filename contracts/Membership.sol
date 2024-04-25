@@ -13,11 +13,11 @@ $$$$$$$  |$$ |  $$ |$$ |  $$ |$$$$$$\ $$ | \$$ |\$$$$$$  |  $$ |   $$$$$$$$\ $$ 
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-
 import "./interface/IMembership.sol";
 import "./interface/IAssets.sol";
+
+import "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract Membership is
     Initializable,
@@ -185,12 +185,12 @@ contract Membership is
         return companyUsers[companyId][user];
     }
 
-    function companyInEcosystem(uint256 ecosystemId, uint256 companyId) external view override returns (Unit memory) {
-        return ecosystemCompanies[ecosystemId][companyId];
+    function companyInEcosystem(uint256 ecosystemId, uint256 companyId) external view override returns (bool) {
+        return ecosystemCompanies[ecosystemId][companyId].id != 0;
     }
 
-    function companyInBrainstem(uint256 brainstemId, uint256 companyId) external view override returns (Unit memory) {
-        return ecosystemBrainstemsCompanies[brainstemId][companyId];
+    function companyInBrainstem(uint256 brainstemId, uint256 companyId) external view override returns (bool) {
+        return ecosystemBrainstemsCompanies[brainstemId][companyId].id != 0;
     }
 
     function assetInBrainstem(uint256 ecosystemId, uint256 brainstemId, uint256 assetId) external view override returns (bool) {

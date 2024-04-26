@@ -120,7 +120,7 @@ interface IMembership {
     /**
      * @notice Returns the detailed brainstem identified by the provided id.
      */
-    function getBrainstem(uint256 brainstemId) external view returns (Unit memory);
+    function getBrainstem(uint256 ecosystemId, uint256 brainstemId) external view returns (Unit memory);
 
     /**
      * @notice Returns the list of associated brainstems for a given company in ecosystem.
@@ -140,7 +140,7 @@ interface IMembership {
     /**
      * @notice Returns if the given company is in the given brainstem.
      */
-    function companyInBrainstem(uint256 brainstemId, uint256 companyId) external view returns (bool);
+    function companyInBrainstem(uint256 ecosystemId, uint256 brainstemId, uint256 companyId) external view returns (bool);
 
     /**
      * @notice Returns if the given asset is in the given brainstem.

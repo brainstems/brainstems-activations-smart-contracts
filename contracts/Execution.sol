@@ -43,7 +43,7 @@ contract Execution is
 
     function useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external override {
       require(_membership.userInCompany(companyId, msg.sender), "Execution: User is not part of the company.");
-      require(_membership.companyInBrainstem(brainstemId, companyId), "Execution: Company is not part of brainstem.");
+      require(_membership.companyInBrainstem(ecosystemId, brainstemId, companyId), "Execution: Company is not part of brainstem.");
 
       AccessType hasAccess = _access.getEcosystemBrainstemAccess(assetId, ecosystemId, brainstemId);
       require(hasAccess == AccessType.USAGE, "Execution: Brainstem does not have access to the asset.");

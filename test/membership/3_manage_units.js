@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { verifyEvents } = require("../utils");
+const { BRAINSTEMS_TOKEN_NAME, BRAINSTEMS_TOKEN_SYMBOL, BRAINSTEMS_TOKEN_DECIMALS } = require("../consts");
 
 let owner,
   membership,
@@ -19,9 +20,24 @@ describe("Membership: Manage Units", function () {
   before(async () => {
     [owner, user1, user2] = await ethers.getSigners();
 
+    const TestErc20 = await ethers.getContractFactory("TestERC20");
+    brainstemsToken = await TestErc20.deploy(
+      BRAINSTEMS_TOKEN_NAME,
+      BRAINSTEMS_TOKEN_SYMBOL,
+      BRAINSTEMS_TOKEN_DECIMALS
+    );
+    await brainstemsToken.waitForDeployment();
+
+    Assets = await ethers.getContractFactory("Assets");
+    assetsContract = await upgrades.deployProxy(Assets, [
+      owner.address,
+      brainstemsToken.target,
+    ]);
+
     const Membership = await ethers.getContractFactory("Membership");
     membership = await upgrades.deployProxy(Membership, [
-      owner.address
+      owner.address,
+      assetsContract.target
     ]);
     await membership.waitForDeployment();
 

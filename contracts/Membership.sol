@@ -39,9 +39,15 @@ contract Membership is
     IAssets private assets;
 
     function initialize(
-        address _admin
+        address _admin,
+        address _assets
     ) public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        assets = IAssets(_assets);
+    }
+
+    function setAssetsContract(address _assets) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        assets = IAssets(_assets);
     }
 
     function createEcosystem(Unit calldata ecosystem) external override onlyRole(DEFAULT_ADMIN_ROLE) {

@@ -20,6 +20,11 @@ const verifyEvents = async (tx, contract, event, expectedEvents) => {
   }
 };
 
+function Enum(...options) {
+  return Object.fromEntries(options.map((key, i) => [key, BigInt(i)]));
+}
+
 module.exports = {
   verifyEvents,
+  Enum
 };

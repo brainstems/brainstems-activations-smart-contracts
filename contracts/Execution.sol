@@ -32,14 +32,22 @@ contract Execution is
     IMembership private _membership;
 
     function initialize(
-        address _admin
+        address _admin,
+        address access,
+        address membership
     ) public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _access = IAccess(access);
+        _membership = IMembership(membership);
     }
 
-    // TODO:
-    // - Allow updating the access control contract.
-    // - Allow updating the membership contract.
+    function setAccessContract(address access) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _access = IAccess(access);
+    }
+
+    function setMembershipContract(address membership) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _membership = IMembership(membership);
+    }
 
     function useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external override {
       require(_membership.userInCompany(companyId, msg.sender), "Execution: User is not part of the company.");

@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@nomicfoundation/edr-darwin-arm64": "^0.3.3",
-    "@openzeppelin/contracts": "^5.0.2"
+    "@openzeppelin/contracts": "^5.0.2",
+    "web3": "^4.8.0"
   }
 }

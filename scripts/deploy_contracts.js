@@ -1,31 +1,35 @@
 const hre = require("hardhat");
-const { admin, usdcToken } = require("./config");
+const { admin, usdcToken, assetsConfigAddress, membershipConfigAddress, accessConfigAddress, executionConfigAddress } = require("./config");
 
-async function main() {
-  if (process.env.DEPLOY_ALL==="true" || process.env.DEPLOY_MEMBERSHIP === "true") {
-    await deployMembershipContract();
-  }
- 
-  if (process.env.DEPLOY_ALL==="true" || process.env.DEPLOY_ASSETS === "true") {
-    await deployAssetsContract();
-  }
-/*
-  if (process.env.DEPLOY_ALL==="true" || process.env.DEPLOY_BRAINSTEM === "true") {
-    await deployBrainstemContract();
-  }
+async function main() { 
+  let assetsAddress, membershipAddress, accessAddress, executionAddress;
 
-  if (process.env.DEPLOY_ALL==="true" || process.env.DEPLOY_EXECUTION === "true") {
-    await deployExecutionContract();
+  if (process.env.DEPLOY_ASSETS !== "true") assetsAddress = assetsConfigAddress;
+  if (process.env.DEPLOY_MEMBERSHIP !== "true") membershipAddress = membershipConfigAddress;
+  if (process.env.DEPLOY_ACCESS !== "true") accessAddress = accessConfigAddress;
+  if (process.env.DEPLOY_EXECUTION !== "true") executionAddress = executionConfigAddress;
+
+  if (process.env.DEPLOY_ALL === "true" || process.env.DEPLOY_ASSETS === "true") {
+    assetsAddress = await deployAssetsContract();
   }
 
-  if (process.env.DEPLOY_ALL==="true" || process.env.DEPLOY_VALIDATION === "true") {
-    await deployValidationContract();
-    
+  if (process.env.DEPLOY_ALL === "true" || process.env.DEPLOY_MEMBERSHIP === "true") {
+    membershipAddress = await deployMembershipContract(assetsAddress);
   }
-  if (process.env.DEPLOY_ALL==="true" || process.env.DEPLOY_ACCESS === "true") {
-    await deployAccessContract();
+
+  if (process.env.DEPLOY_ALL === "true" || process.env.DEPLOY_ACCESS === "true") {
+    accessAddress = await deployAccessContract(assetsAddress, membershipAddress);
   }
-*/
+
+  if (process.env.DEPLOY_ALL === "true" || process.env.DEPLOY_EXECUTION === "true") {
+    executionAddress = await deployExecutionContract(accessAddress, membershipAddress);
+  }
+
+  /*
+    if (process.env.DEPLOY_ALL==="true" || process.env.DEPLOY_VALIDATION === "true") {
+      await deployValidationContract();
+    }
+  */
 }
 
 async function deployValidationContract() {
@@ -39,49 +43,62 @@ async function deployValidationContract() {
   ]);
   await validation.waitForDeployment();
 
-  console.log("deployed to :", await validation.getAddress());
+  const address = await validation.getAddress();
+  console.log("deployed to :", address);
+  return address;
 }
 
-async function deployMembershipContract() {
+async function deployMembershipContract(assetsAddress) {
   console.log("deploying Membership Contract....");
 
   const Membership = await hre.ethers.getContractFactory(
     "Membership"
   );
-  const membership = await upgrades.deployProxy(Membership, [admin
-    // Constructor args.
+  const membership = await upgrades.deployProxy(Membership, [
+    admin,
+    assetsAddress
   ]);
   await membership.waitForDeployment();
 
-  console.log("deployed to :", await membership.getAddress());
+  const address = await membership.getAddress();
+  console.log("deployed to :", address);
+
+  try {
+    await hre.run(`verify:verify`, {
+      address: address,
+      constructorArguments: [],
+    });
+  }
+  catch {}
+
+  return address;
 }
 
-async function deployExecutionContract() {
+async function deployExecutionContract(accessAddress, membershipAddress) {
   console.log("deploying Execution Contract....");
 
   const Execution = await hre.ethers.getContractFactory(
     "Execution"
   );
   const execution = await upgrades.deployProxy(Execution, [
-    // Constructor args.
+    admin,
+    accessAddress,
+    membershipAddress
   ]);
   await execution.waitForDeployment();
 
-  console.log("deployed to :", await execution.getAddress());
-}
+  const address = await execution.getAddress();
+  console.log("deployed to:", address);
 
-async function deployBrainstemContract() {
-  console.log("deploying Brainstem Contract....");
+  try {
+    await hre.run(`verify:verify`, {
+      address: address,
+      constructorArguments: [],
+    });
+  }
+  catch {}
 
-  const Brainstem = await hre.ethers.getContractFactory(
-    "Brainstem"
-  );
-  const brainstem = await upgrades.deployProxy(Brainstem, [
-    // Constructor args.
-  ]);
-  await brainstem.waitForDeployment();
-
-  console.log("deployed to :", await brainstem.getAddress());
+  return address;
 }
 
 async function deployAssetsContract() {
@@ -96,21 +113,45 @@ async function deployAssetsContract() {
   ]);
   await assets.waitForDeployment();
 
-  console.log("deployed to :", await assets.getAddress());
+  const address = await assets.getAddress();
+  console.log("deployed to:", address);
+
+  try {
+    await hre.run(`verify:verify`, {
+      address: address,
+      constructorArguments: [],
+    });
+  }
+  catch {}
+
+  return address;
 }
 
-async function deployAccessContract() {
+async function deployAccessContract(assetsAddress, membershipAddress) {
   console.log("deploying Access Contract....");
 
   const Access = await hre.ethers.getContractFactory(
     "Access"
   );
   const access = await upgrades.deployProxy(Access, [
-    // Constructor args.
+    admin,
+    assetsAddress,
+    membershipAddress
   ]);
   await access.waitForDeployment();
 
-  console.log("deployed to :", await access.getAddress());
+  const address = await access.getAddress();
+  console.log("deployed to:", address);
+
+  try {
+    await hre.run(`verify:verify`, {
+      address: address,
+      constructorArguments: [],
+    });
+  }
+  catch {}
+
+  return address;
 }
 
 main().catch((error) => {

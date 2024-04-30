@@ -86,3 +86,9 @@ Example command to run all contracts in localhost:
 ```sh
 npm run deploy-contracts -- --network localhost -membership -access -assets -brainstem -execution -validation
 ```
+
+
+## BSTMS Whitelisting Example Flow:
+
+1- Deploy all contracts in the following order:
+  -

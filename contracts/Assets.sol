@@ -99,6 +99,13 @@ contract Assets is
         emit AssetUpgraded(assetId, metadata, ipfsHash);
     }
 
+    function setPaymentToken(
+        address _paymentToken
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_paymentToken != address(0), "invalid contract address");
+        paymentToken = IERC20(_paymentToken);
+    }
+
     function editUri(
         uint256 assetId,
         string calldata ipfsHash

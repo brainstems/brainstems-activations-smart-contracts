@@ -126,3 +126,20 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 
   When an execution is triggered, an event will be emitted, and the backend will be able to listen to this event and verify the signature. If the signature is valid, then we can store the user as a valid user for the airdrop.
 ```
+
+<br></br>
+
+### Observations:
+  - When we refer to an `ecosystem`, `brainstem` or `company` we refer to the `Unit` struct composed by:
+    - `id` (uint256)
+    - `name` (string)
+  
+  <br>
+
+  -  When we refer to a user we refer to a `user` we refer to an address, and users is an array of addresses.
+
+  <br>
+
+  The architecture was thought following the following thoughts diagram:
+
+  ![Architecture](./flow.jpg)

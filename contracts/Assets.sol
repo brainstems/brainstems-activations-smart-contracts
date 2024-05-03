@@ -13,12 +13,12 @@ $$$$$$$  |$$ |  $$ |$$ |  $$ |$$$$$$\ $$ | \$$ |\$$$$$$  |  $$ |   $$$$$$$$\ $$ 
 
 pragma solidity ^0.8.7;
 
+import "./interface/IAssets.sol";
+
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-
-import "./interface/IAssets.sol";
 
 contract Assets is
     Initializable,
@@ -97,6 +97,13 @@ contract Assets is
         assets[assetId].uri = ipfsHash;
 
         emit AssetUpgraded(assetId, metadata, ipfsHash);
+    }
+
+    function setPaymentToken(
+        address _paymentToken
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_paymentToken != address(0), "invalid contract address");
+        paymentToken = IERC20(_paymentToken);
     }
 
     function editUri(

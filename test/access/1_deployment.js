@@ -1,11 +1,20 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { admin } = require("../../scripts/config");
-const { BRAINSTEMS_TOKEN_DECIMALS, BRAINSTEMS_TOKEN_SYMBOL, BRAINSTEMS_TOKEN_NAME } = require("../consts");
+const {
+  BRAINSTEMS_TOKEN_NAME,
+  BRAINSTEMS_TOKEN_SYMBOL,
+  BRAINSTEMS_TOKEN_DECIMALS,
+} = require("../consts");
 
-let Membership;
+let Assets,
+  Membership,
+  brainstemsToken,
+  assetsContract,
+  membership,
+  owner;
 
-describe("Membership: Deployment", function () {
+describe("Access: Deployment", function () {
   before(async () => {
     [owner] = await ethers.getSigners();
 
@@ -24,18 +33,26 @@ describe("Membership: Deployment", function () {
     ]);
 
     Membership = await ethers.getContractFactory("Membership");
+    membership = await upgrades.deployProxy(Membership, [
+      owner.address,
+      assetsContract.target
+    ]);
+
+    Access = await ethers.getContractFactory("Access");
+    
   });
 
-  describe("membership should deploy successfully", function () {
+  describe("access should deploy successfully", function () {
     it("with valid parameters", async function () {
-      const membership = await upgrades.deployProxy(Membership, [
-        admin,
-        assetsContract.target
+      const access = await upgrades.deployProxy(Access, [
+        owner.address,
+        assetsContract.target,
+        membership.target
       ]);
-      await membership.waitForDeployment();
+      await access.waitForDeployment();
 
-      const adminRole = await membership.DEFAULT_ADMIN_ROLE();
-      const adminHasAdminRole = await membership.hasRole(adminRole, admin);
+      const adminRole = await access.DEFAULT_ADMIN_ROLE();
+      const adminHasAdminRole = await access.hasRole(adminRole, owner.address);
       expect(adminHasAdminRole).to.be.true;
     });
   });

@@ -129,6 +129,15 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 
 <br></br>
 
+### Frontend Considerations:
+  - For checking if a user is able to interact with JedAI, we can use the `Membership.userInCompany(uint256 companyId, address user)` method to check wether the user has been added to the company. The company id can be hardcoded, since there should only be one company for the airdrop system.
+
+  <br>
+
+  - For executing the asset, we can use the `Execution.useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data)` method, and pass the `bytes` param as the hash of the prerequisit that needs to be met. In this case, asset id, ecosystem id, brainstem id and company id can be hardcoded, since there should only be one asset, ecosystem, brainstem and company for the airdrop system.
+
+<br></br>
+
 ### Observations:
   - When we refer to an `ecosystem`, `brainstem` or `company` we refer to the `Unit` struct composed by:
     - `id` (uint256)

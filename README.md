@@ -1,4 +1,4 @@
-# Brainstems DAO
+# Brainstems Activations and Assets (Agents, Models, Data fingerprinting)
 
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)

@@ -21,9 +21,9 @@ let Access,
   user2,
   user3,
   TestsEcosystemUnit,
-  TestsCompanyUnit,
-  TestsCompanyUnitTwo,
-  TestsCompanyUnitThree,
+  TestsNeuronUnit,
+  TestsNeuronUnitTwo,
+  TestsNeuronUnitThree,
   TestsBrainstemUnit,
   TestsBrainstemUnitTwo,
   assetId,
@@ -68,17 +68,17 @@ describe("Access: Grant Acceses", function () {
       name: "Ecosystem",
     }
 
-    TestsCompanyUnit = {
+    TestsNeuronUnit = {
       id: 1n,
       name: "Coca Cola",
     }
 
-    TestsCompanyUnitTwo = {
+    TestsNeuronUnitTwo = {
       id: 2n,
       name: "Pepsi",
     }
 
-    TestsCompanyUnitThree = {
+    TestsNeuronUnitThree = {
       id: 3n,
       name: "Sprite",
     }
@@ -98,18 +98,18 @@ describe("Access: Grant Acceses", function () {
     );
     await EcosystemTx.wait();
 
-    const MemberTx = await membership.createCompany(
-      TestsCompanyUnit
+    const MemberTx = await membership.createNeuron(
+      TestsNeuronUnit
     );
     await MemberTx.wait();
 
-    const MemberTxTwo = await membership.createCompany(
-      TestsCompanyUnitTwo
+    const MemberTxTwo = await membership.createNeuron(
+      TestsNeuronUnitTwo
     );
     await MemberTxTwo.wait();
 
-    const MemberTxThree = await membership.createCompany(
-      TestsCompanyUnitThree
+    const MemberTxThree = await membership.createNeuron(
+      TestsNeuronUnitThree
     );
     await MemberTxThree.wait();
 
@@ -125,46 +125,46 @@ describe("Access: Grant Acceses", function () {
     );
     await BrainstemTxTwo.wait();
 
-    await membership.addEcosystemCompany(
+    await membership.addEcosystemNeuron(
       TestsEcosystemUnit.id,
-      TestsCompanyUnit.id
+      TestsNeuronUnit.id
     );
 
-    await membership.addEcosystemCompany(
+    await membership.addEcosystemNeuron(
       TestsEcosystemUnit.id,
-      TestsCompanyUnitTwo.id
+      TestsNeuronUnitTwo.id
     );
 
-    await membership.addEcosystemCompany(
+    await membership.addEcosystemNeuron(
       TestsEcosystemUnit.id,
-      TestsCompanyUnitThree.id
+      TestsNeuronUnitThree.id
     );
 
     await membership.addUsers(
-      TestsCompanyUnit.id,
+      TestsNeuronUnit.id,
       [user1.address]
     );
 
     await membership.addUsers(
-      TestsCompanyUnitTwo.id,
+      TestsNeuronUnitTwo.id,
       [user1.address]
     );
 
     await membership.addUsers(
-      TestsCompanyUnitThree.id,
+      TestsNeuronUnitThree.id,
       [user1.address]
     );
 
-    await membership.addBrainstemCompany(
+    await membership.addBrainstemNeuron(
       TestsEcosystemUnit.id,
       TestsBrainstemUnit.id,
-      TestsCompanyUnit.id
+      TestsNeuronUnit.id
     );
 
-    await membership.addBrainstemCompany(
+    await membership.addBrainstemNeuron(
       TestsEcosystemUnit.id,
       TestsBrainstemUnitTwo.id,
-      TestsCompanyUnitThree.id
+      TestsNeuronUnitThree.id
     );
 
     // Asset Creation
@@ -218,7 +218,7 @@ describe("Access: Grant Acceses", function () {
 
   // TODO: useBrainstemAsset.
   // TODO: useBrainstemAsset with invalid user.
-  // TODO: useBrainstemAsset with company not in brainstem.
+  // TODO: useBrainstemAsset with neuron not in brainstem.
   // TODO: useBrainstemAsset with brainstem with no valid access.
 
   describe("should be able to", function () {
@@ -227,7 +227,7 @@ describe("Access: Grant Acceses", function () {
         assetId,
         TestsEcosystemUnit.id,
         TestsBrainstemUnit.id,
-        TestsCompanyUnit.id,
+        TestsNeuronUnit.id,
         "0x"
       );
       await tx.wait();
@@ -241,22 +241,22 @@ describe("Access: Grant Acceses", function () {
           assetId,
           TestsEcosystemUnit.id,
           TestsBrainstemUnit.id,
-          TestsCompanyUnit.id,
+          TestsNeuronUnit.id,
           "0x"
         )
-      ).to.be.revertedWith("Execution: User is not part of the company.");
+      ).to.be.revertedWith("Execution: User is not part of the neuron.");
     });
 
-    it("execute a brainstem asset with company not in brainstem", async function () {
+    it("execute a brainstem asset with neuron not in brainstem", async function () {
       await expect(
         execution.connect(user1).useBrainstemAsset(
           assetId,
           TestsEcosystemUnit.id,
           TestsBrainstemUnitTwo.id,
-          TestsCompanyUnit.id,
+          TestsNeuronUnit.id,
           "0x"
         )
-      ).to.be.revertedWith("Execution: Company is not part of brainstem.");
+      ).to.be.revertedWith("Execution: Neuron is not part of brainstem.");
     });
   });
 
@@ -266,7 +266,7 @@ describe("Access: Grant Acceses", function () {
         assetId,
         TestsEcosystemUnit.id,
         TestsBrainstemUnitTwo.id,
-        TestsCompanyUnitThree.id,
+        TestsNeuronUnitThree.id,
         "0x"
       )
     ).to.be.revertedWith("Execution: Brainstem does not have access to the asset.");

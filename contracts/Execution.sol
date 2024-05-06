@@ -49,9 +49,9 @@ contract Execution is
         _membership = IMembership(membership);
     }
 
-    function useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external override {
-      require(_membership.userInCompany(companyId, msg.sender), "Execution: User is not part of the company.");
-      require(_membership.companyInBrainstem(ecosystemId, brainstemId, companyId), "Execution: Company is not part of brainstem.");
+    function useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 neuronId, bytes memory data) external override {
+      require(_membership.userInNeuron(neuronId, msg.sender), "Execution: User is not part of the neuron.");
+      require(_membership.neuronInBrainstem(ecosystemId, brainstemId, neuronId), "Execution: Neuron is not part of brainstem.");
 
       AccessType hasAccess = _access.getEcosystemBrainstemAccess(assetId, ecosystemId, brainstemId);
       require(hasAccess == AccessType.USAGE, "Execution: Brainstem does not have access to the asset.");
@@ -61,7 +61,7 @@ contract Execution is
         assetId: assetId,
         ecosystemId: ecosystemId,
         brainstemId: brainstemId,
-        companyId: companyId,
+        neuronId: neuronId,
         executor: msg.sender,
         data: data
       });
@@ -69,7 +69,7 @@ contract Execution is
       assetBrainstemExecutions[assetId][assetBrainstemExecutionId[assetId]] = execution;
       assetBrainstemExecutionId[assetId] += 1;
 
-      emit AssetUsed(assetId, ecosystemId, brainstemId, companyId, msg.sender, execution.id, data);
+      emit AssetUsed(assetId, ecosystemId, brainstemId, neuronId, msg.sender, execution.id, data);
     }
 
     function queryBrainstemAssetUse(uint256 assetId, uint256 executionId) external view override returns (Execution memory) {

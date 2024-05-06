@@ -89,22 +89,22 @@ describe("Membership: Creation", function () {
       expect(contractEcosystem.id).to.equal(ecosystemUnit.id);
     });
 
-    it("create a company with valid parameters", async function () {
-      const tx = await membership.createCompany(
+    it("create a neuron with valid parameters", async function () {
+      const tx = await membership.createNeuron(
         memberUnit
       );
       await tx.wait();
 
-      const expectedCompany = [
+      const expectedNeuron = [
         memberUnit.id,
         memberUnit.name
       ];
 
-      await verifyEvents(tx, membership, "CompanyCreated", [
-        { id: memberUnit.id, company: expectedCompany },
+      await verifyEvents(tx, membership, "NeuronCreated", [
+        { id: memberUnit.id, neuron: expectedNeuron },
       ]);
 
-      const contractEcosystem = await membership.getCompany(memberUnit.id);
+      const contractEcosystem = await membership.getNeuron(memberUnit.id);
       expect(contractEcosystem.name).to.equal(memberUnit.name);
       expect(contractEcosystem.id).to.equal(memberUnit.id);
     });
@@ -162,23 +162,23 @@ describe("Membership: Creation", function () {
       );
     });
 
-    it("create a company with invalid parameters", async function () {
+    it("create a neuron with invalid parameters", async function () {
       await expect(
-        membership.createCompany(
-          { id: 0n, name: "Company" }
+        membership.createNeuron(
+          { id: 0n, name: "Neuron" }
         )
-      ).to.be.revertedWith("company id cannot be 0");
+      ).to.be.revertedWith("neuron id cannot be 0");
       
       await expect(
-        membership.createCompany(
+        membership.createNeuron(
           memberUnit
         )
-      ).to.be.revertedWith("company id already registered");
+      ).to.be.revertedWith("neuron id already registered");
 
       await expect(
         membership
           .connect(user1)
-          .createCompany(memberUnit)
+          .createNeuron(memberUnit)
       ).to.be.revertedWithCustomError(
         membership,
         "AccessControlUnauthorizedAccount"

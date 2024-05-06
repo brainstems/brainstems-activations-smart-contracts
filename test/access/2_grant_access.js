@@ -21,7 +21,7 @@ let Access,
   user2,
   user3,
   TestsEcosystemUnit,
-  TestsCompanyUnit,
+  TestsNeuronUnit,
   TestsBrainstemUnit,
   TestsBrainstemUnitTwo,
   assetId,
@@ -66,7 +66,7 @@ describe("Access: Grant Acceses", function () {
       name: "Ecosystem",
     }
 
-    TestsCompanyUnit = {
+    TestsNeuronUnit = {
       id: 1n,
       name: "Coca Cola",
     }
@@ -86,8 +86,8 @@ describe("Access: Grant Acceses", function () {
     );
     await EcosystemTx.wait();
 
-    const MemberTx = await membership.createCompany(
-      TestsCompanyUnit
+    const MemberTx = await membership.createNeuron(
+      TestsNeuronUnit
     );
     await MemberTx.wait();
 
@@ -103,20 +103,20 @@ describe("Access: Grant Acceses", function () {
     );
     await BrainstemTxTwo.wait();
 
-    await membership.addEcosystemCompany(
+    await membership.addEcosystemNeuron(
       TestsEcosystemUnit.id,
-      TestsCompanyUnit.id
+      TestsNeuronUnit.id
     );
 
     await membership.addUsers(
-      TestsCompanyUnit.id,
+      TestsNeuronUnit.id,
       [user1.address]
     );
 
-    await membership.addBrainstemCompany(
+    await membership.addBrainstemNeuron(
       TestsEcosystemUnit.id,
       TestsBrainstemUnit.id,
-      TestsCompanyUnit.id
+      TestsNeuronUnit.id
     );
 
     // Asset Creation

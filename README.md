@@ -1,4 +1,4 @@
-# Brainstems Activations and Assets (Agents, Models, Data fingerprinting)
+# Brainstems Management Contracts for Brainstem, Pathways, Neurons, Activations and Assets (Agents, Models, Data fingerprinting)
 
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
@@ -87,7 +87,7 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 ```
 
 
-## BSTMS Whitelisting Example Flow:
+## Brainstems :
 
 1- Deploy all contracts in the following order:
   - Assets
@@ -99,17 +99,17 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 
 3- Admin to Setup the Membership contract:
   - Create the Ecosystem. (`Membership.createEcosystem(ecosystem)`)
-  - Create the Company. (`Membership.createCompany(company)`)
+  - Create the Neuron. (`Membership.createNeuron(neuron)`)
   - Create the Brainstem. (`Membership.createBrainstem(brainstem, ecosystemId)`)
-  - Add the Company to the Ecosystem. (`Membership.addEcosystemCompany(ecosystemId, companyId)`)
-  - Add the Company to the Brainstem. (`Membership.addBrainstemCompany(ecosystemId, brainstemId, companyId)`)
-  - Add the allowed users to the Company. (`Membership.addUsers(companyId, users[])`)
+  - Add the Neuron to the Ecosystem. (`Membership.addEcosystemNeuron(ecosystemId, neuronId)`)
+  - Add the Neuron to the Brainstem. (`Membership.addBrainstemNeuron(ecosystemId, brainstemId, neuron)`)
+  - Add the allowed users to the Neuron. (`Membership.addUsers(neuronId, users[])`)
 
 4- Admin to Setup the Access contract:
   - Give access to the interactions assets for the created brainstem. (`Access.updateEcosystemBrainstemAccess(assetId, ecosystemId, brainstemId, access)`) (for users to be able to execute the interactions use USAGE access type, index 1).
 
 5- Once contracts are deployed and setup, the flow is the following:
-  - When new users want to be given access to execute the asset, admin should Add the allowed users to the Company. (`Membership.addUsers(companyId, users[])`)
+  - When new users want to be given access to execute the asset, admin should Add the allowed users to the Neuron. (`Membership.addUsers(neuronId, users[])`)
 ```
   We want to validate that executions are valid and a prerequisit has been met, this is where the `bytes` param comes in. When a user tries to execute an asset it should call the function `Execution.useBrainstemAsset` with the following params:
     - assetId
@@ -130,16 +130,16 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 <br></br>
 
 ### Frontend Considerations:
-  - For checking if a user is able to interact with JedAI, we can use the `Membership.userInCompany(uint256 companyId, address user)` method to check wether the user has been added to the company. The company id can be hardcoded, since there should only be one company for the airdrop system.
+  - For checking if a user is able to interact with JedAI, we can use the `Membership.userInNeuron(uint256 neuronId, address user)` method to check wether the user has been added to the neuron. The neuron id can be hardcoded, since there should only be one neuron for the airdrop system.
 
   <br>
 
-  - For executing the asset, we can use the `Execution.useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data)` method, and pass the `bytes` param as the hash of the prerequisit that needs to be met. In this case, asset id, ecosystem id, brainstem id and company id can be hardcoded, since there should only be one asset, ecosystem, brainstem and company for the airdrop system.
+  - For executing the asset, we can use the `Execution.useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 neuronId, bytes memory data)` method, and pass the `bytes` param as the hash of the prerequisit that needs to be met. In this case, asset id, ecosystem id, brainstem id and neuron id can be hardcoded, since there should only be one asset, ecosystem, brainstem and neuron for the airdrop system.
 
 <br></br>
 
 ### Observations:
-  - When we refer to an `ecosystem`, `brainstem` or `company` we refer to the `Unit` struct composed by:
+  - When we refer to an `ecosystem`, `brainstem` or `neuron` we refer to the `Unit` struct composed by:
     - `id` (uint256)
     - `name` (string)
   

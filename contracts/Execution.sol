@@ -49,17 +49,17 @@ contract Execution is
         _membership = IMembership(membership);
     }
 
-    function usePathwayAsset(uint256 assetId, uint256 ecosystemId, uint256 pathwayId, uint256 neuronId, bytes memory data) external override {
+    function usePathwayAsset(uint256 assetId, uint256 brainstemId, uint256 pathwayId, uint256 neuronId, bytes memory data) external override {
       require(_membership.userInNeuron(neuronId, msg.sender), "Execution: User is not part of the neuron.");
-      require(_membership.neuronInPathway(ecosystemId, pathwayId, neuronId), "Execution: Neuron is not part of pathway.");
+      require(_membership.neuronInPathway(brainstemId, pathwayId, neuronId), "Execution: Neuron is not part of pathway.");
 
-      AccessType hasAccess = _access.getEcosystemPathwayAccess(assetId, ecosystemId, pathwayId);
+      AccessType hasAccess = _access.getBrainstemPathwayAccess(assetId, brainstemId, pathwayId);
       require(hasAccess == AccessType.USAGE, "Execution: Pathway does not have access to the asset.");
 
       Execution memory execution = Execution({
         id: assetPathwayExecutionId[assetId],
         assetId: assetId,
-        ecosystemId: ecosystemId,
+        brainstemId: brainstemId,
         pathwayId: pathwayId,
         neuronId: neuronId,
         executor: msg.sender,
@@ -69,7 +69,7 @@ contract Execution is
       assetPathwayExecutions[assetId][assetPathwayExecutionId[assetId]] = execution;
       assetPathwayExecutionId[assetId] += 1;
 
-      emit AssetUsed(assetId, ecosystemId, pathwayId, neuronId, msg.sender, execution.id, data);
+      emit AssetUsed(assetId, brainstemId, pathwayId, neuronId, msg.sender, execution.id, data);
     }
 
     function queryPathwayAssetUse(uint256 assetId, uint256 executionId) external view override returns (Execution memory) {

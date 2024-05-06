@@ -20,7 +20,7 @@ let Access,
   user1,
   user2,
   user3,
-  TestsEcosystemUnit,
+  TestsBrainstemUnit,
   TestsNeuronUnit,
   TestsNeuronUnitTwo,
   TestsNeuronUnitThree,
@@ -63,9 +63,9 @@ describe("Access: Grant Acceses", function () {
       membership.target
     ]);
 
-    TestsEcosystemUnit = {
+    TestsBrainstemUnit = {
       id: 1n,
-      name: "Ecosystem",
+      name: "Brainstem",
     }
 
     TestsNeuronUnit = {
@@ -93,10 +93,10 @@ describe("Access: Grant Acceses", function () {
       name: "PathwaysTwo",
     }
 
-    const EcosystemTx = await membership.createEcosystem(
-      TestsEcosystemUnit
+    const BrainstemTx = await membership.createBrainstem(
+      TestsBrainstemUnit
     );
-    await EcosystemTx.wait();
+    await BrainstemTx.wait();
 
     const MemberTx = await membership.createNeuron(
       TestsNeuronUnit
@@ -115,28 +115,28 @@ describe("Access: Grant Acceses", function () {
 
     const PathwayTx = await membership.createPathway(
       TestsPathwayUnit,
-      TestsEcosystemUnit.id
+      TestsBrainstemUnit.id
     );
     await PathwayTx.wait();
 
     const PathwayTxTwo = await membership.createPathway(
       TestsPathwayUnitTwo,
-      TestsEcosystemUnit.id
+      TestsBrainstemUnit.id
     );
     await PathwayTxTwo.wait();
 
-    await membership.addEcosystemNeuron(
-      TestsEcosystemUnit.id,
+    await membership.addBrainstemNeuron(
+      TestsBrainstemUnit.id,
       TestsNeuronUnit.id
     );
 
-    await membership.addEcosystemNeuron(
-      TestsEcosystemUnit.id,
+    await membership.addBrainstemNeuron(
+      TestsBrainstemUnit.id,
       TestsNeuronUnitTwo.id
     );
 
-    await membership.addEcosystemNeuron(
-      TestsEcosystemUnit.id,
+    await membership.addBrainstemNeuron(
+      TestsBrainstemUnit.id,
       TestsNeuronUnitThree.id
     );
 
@@ -156,13 +156,13 @@ describe("Access: Grant Acceses", function () {
     );
 
     await membership.addPathwayNeuron(
-      TestsEcosystemUnit.id,
+      TestsBrainstemUnit.id,
       TestsPathwayUnit.id,
       TestsNeuronUnit.id
     );
 
     await membership.addPathwayNeuron(
-      TestsEcosystemUnit.id,
+      TestsBrainstemUnit.id,
       TestsPathwayUnitTwo.id,
       TestsNeuronUnitThree.id
     );
@@ -207,9 +207,9 @@ describe("Access: Grant Acceses", function () {
 
     AccessTypes = Enum("NO_ACCESS", "USAGE", "VALIDATION");
 
-    const accessTx = await accessContract.updateEcosystemPathwayAccess(
+    const accessTx = await accessContract.updateBrainstemPathwayAccess(
       assetId,
-      TestsEcosystemUnit.id,
+      TestsBrainstemUnit.id,
       TestsPathwayUnit.id,
       AccessTypes.USAGE
     );
@@ -225,7 +225,7 @@ describe("Access: Grant Acceses", function () {
     it("execute a pathway asset", async function () {
       const tx = await execution.connect(user1).usePathwayAsset(
         assetId,
-        TestsEcosystemUnit.id,
+        TestsBrainstemUnit.id,
         TestsPathwayUnit.id,
         TestsNeuronUnit.id,
         "0x"
@@ -239,7 +239,7 @@ describe("Access: Grant Acceses", function () {
       await expect(
         execution.usePathwayAsset(
           assetId,
-          TestsEcosystemUnit.id,
+          TestsBrainstemUnit.id,
           TestsPathwayUnit.id,
           TestsNeuronUnit.id,
           "0x"
@@ -251,7 +251,7 @@ describe("Access: Grant Acceses", function () {
       await expect(
         execution.connect(user1).usePathwayAsset(
           assetId,
-          TestsEcosystemUnit.id,
+          TestsBrainstemUnit.id,
           TestsPathwayUnitTwo.id,
           TestsNeuronUnit.id,
           "0x"
@@ -264,7 +264,7 @@ describe("Access: Grant Acceses", function () {
     await expect(
       execution.connect(user1).usePathwayAsset(
         assetId,
-        TestsEcosystemUnit.id,
+        TestsBrainstemUnit.id,
         TestsPathwayUnitTwo.id,
         TestsNeuronUnitThree.id,
         "0x"

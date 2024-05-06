@@ -17,16 +17,16 @@ interface IExecution {
     struct Execution {
         uint256 id;
         uint256 assetId;
-        uint256 ecosystemId;
+        uint256 brainstemId;
         uint256 pathwayId;
         uint256 neuronId;
         address executor;
         bytes data;
     }
 
-    event AssetUsed(uint256 indexed assetId, uint256 ecosystemId, uint256 pathwayId, uint256 indexed neuronId, address executor, uint256 indexed executionId, bytes data);
+    event AssetUsed(uint256 indexed assetId, uint256 brainstemId, uint256 pathwayId, uint256 indexed neuronId, address executor, uint256 indexed executionId, bytes data);
 
-    function usePathwayAsset(uint256 assetId, uint256 ecosystemId, uint256 pathwayId, uint256 neuronId, bytes memory data) external;
+    function usePathwayAsset(uint256 assetId, uint256 brainstemId, uint256 pathwayId, uint256 neuronId, bytes memory data) external;
 
     function queryPathwayAssetUse(uint256 assetId, uint256 executionId) external view returns (Execution memory);
 }

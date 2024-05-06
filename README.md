@@ -98,22 +98,22 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 2- Admin to Create the interactions asset in the Assets contract. (`Assets.createAsset(assetId, baseAsset, contributors, ipfsHash, metadata)`)
 
 3- Admin to Setup the Membership contract:
-  - Create the Ecosystem. (`Membership.createEcosystem(ecosystem)`)
+  - Create the Brainstem. (`Membership.createBrainstem(brainstem)`)
   - Create the Neuron. (`Membership.createNeuron(neuron)`)
-  - Create the Pathway. (`Membership.createPathway(pathway, ecosystemId)`)
-  - Add the Neuron to the Ecosystem. (`Membership.addEcosystemNeuron(ecosystemId, neuronId)`)
-  - Add the Neuron to the Pathway. (`Membership.addPathwayNeuron(ecosystemId, pathwayId, neuron)`)
+  - Create the Pathway. (`Membership.createPathway(pathway, brainstemId)`)
+  - Add the Neuron to the Brainstem. (`Membership.addBrainstemNeuron(brainstemId, neuronId)`)
+  - Add the Neuron to the Pathway. (`Membership.addPathwayNeuron(brainstemId, pathwayId, neuron)`)
   - Add the allowed users to the Neuron. (`Membership.addUsers(neuronId, users[])`)
 
 4- Admin to Setup the Access contract:
-  - Give access to the interactions assets for the created pathway. (`Access.updateEcosystemPathwayAccess(assetId, ecosystemId, pathwayId, access)`) (for users to be able to execute the interactions use USAGE access type, index 1).
+  - Give access to the interactions assets for the created pathway. (`Access.updateBrainstemPathwayAccess(assetId, brainstemId, pathwayId, access)`) (for users to be able to execute the interactions use USAGE access type, index 1).
 
 5- Once contracts are deployed and setup, the flow is the following:
   - When new users want to be given access to execute the asset, admin should Add the allowed users to the Neuron. (`Membership.addUsers(neuronId, users[])`)
 ```
   We want to validate that executions are valid and a prerequisit has been met, this is where the `bytes` param comes in. When a user tries to execute an asset it should call the function `Execution.usePathwayAsset` with the following params:
     - assetId
-    - ecosystemId
+    - brainstemId
     - pathwayId
     - bytes (this should be the hash of the prerequisit that needs to be met)
 
@@ -134,12 +134,12 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 
   <br>
 
-  - For executing the asset, we can use the `Execution.usePathwayAsset(uint256 assetId, uint256 ecosystemId, uint256 pathwayId, uint256 neuronId, bytes memory data)` method, and pass the `bytes` param as the hash of the prerequisit that needs to be met. In this case, asset id, ecosystem id, pathway id and neuron id can be hardcoded, since there should only be one asset, ecosystem, pathway and neuron for the airdrop system.
+  - For executing the asset, we can use the `Execution.usePathwayAsset(uint256 assetId, uint256 brainstemId, uint256 pathwayId, uint256 neuronId, bytes memory data)` method, and pass the `bytes` param as the hash of the prerequisit that needs to be met. In this case, asset id, brainstem id, pathway id and neuron id can be hardcoded, since there should only be one asset, brainstem, pathway and neuron for the airdrop system.
 
 <br></br>
 
 ### Observations:
-  - When we refer to an `ecosystem`, `pathway` or `neuron` we refer to the `Unit` struct composed by:
+  - When we refer to an `brainstem`, `pathway` or `neuron` we refer to the `Unit` struct composed by:
     - `id` (uint256)
     - `name` (string)
   

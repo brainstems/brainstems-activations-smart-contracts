@@ -24,18 +24,18 @@ contract Membership is
     AccessControlEnumerableUpgradeable,
     IMembership
 {
-    mapping(uint256 => Unit) private ecosystems;
-    mapping(string => bool) private ecosystemRegisteredNames;
+    mapping(uint256 => Unit) private brainstems;
+    mapping(string => bool) private brainstemRegisteredNames;
 
     mapping(uint256 => Unit) private companies;
     mapping(uint256 => mapping(address => bool)) neuronUsers;
 
-    mapping(uint256 => mapping(uint256 => Unit)) private ecosystemPathways;
-    mapping(uint256 => mapping(uint256 => Unit)) private ecosystemCompanies;
-    mapping(uint256 => mapping(uint256 => mapping(uint256 => Unit))) private ecosystemPathwaysCompanies;
-    mapping(uint256 => mapping(uint256 => uint256[])) private ecosystemCompaniesAssociatedPathways;
+    mapping(uint256 => mapping(uint256 => Unit)) private brainstemPathways;
+    mapping(uint256 => mapping(uint256 => Unit)) private brainstemCompanies;
+    mapping(uint256 => mapping(uint256 => mapping(uint256 => Unit))) private brainstemPathwaysCompanies;
+    mapping(uint256 => mapping(uint256 => uint256[])) private brainstemCompaniesAssociatedPathways;
 
-    mapping(uint256 => mapping(uint256 => mapping(uint256 => bool))) private ecosystemPathwayAssets;
+    mapping(uint256 => mapping(uint256 => mapping(uint256 => bool))) private brainstemPathwayAssets;
     IAssets private assets;
 
     function initialize(
@@ -50,14 +50,14 @@ contract Membership is
         assets = IAssets(_assets);
     }
 
-    function createEcosystem(Unit calldata ecosystem) external override onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(ecosystem.id != 0, "ecosystem id cannot be 0");
-        require(ecosystemRegisteredNames[ecosystem.name] == false, "ecosystem name already registered");
-        require(ecosystems[ecosystem.id].id == 0, "ecosystem id already registered");
+    function createBrainstem(Unit calldata brainstem) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(brainstem.id != 0, "brainstem id cannot be 0");
+        require(brainstemRegisteredNames[brainstem.name] == false, "brainstem name already registered");
+        require(brainstems[brainstem.id].id == 0, "brainstem id already registered");
         
-        ecosystems[ecosystem.id] = ecosystem;
-        ecosystemRegisteredNames[ecosystem.name] = true;
-        emit EcosystemCreated(ecosystem.id, ecosystem);
+        brainstems[brainstem.id] = brainstem;
+        brainstemRegisteredNames[brainstem.name] = true;
+        emit BrainstemCreated(brainstem.id, brainstem);
     }
 
     function createNeuron(Unit calldata neuron) external override onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -68,32 +68,32 @@ contract Membership is
         emit NeuronCreated(neuron.id, neuron);
     }
 
-    function createPathway(Unit calldata pathway, uint256 ecosystemId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+    function createPathway(Unit calldata pathway, uint256 brainstemId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
         require(pathway.id != 0, "pathway id cannot be 0");
-        require(ecosystems[ecosystemId].id != 0, "ecosystem id not found");
-        require(ecosystemPathways[ecosystemId][pathway.id].id == 0, "pathway id already registered in ecosystem");
+        require(brainstems[brainstemId].id != 0, "brainstem id not found");
+        require(brainstemPathways[brainstemId][pathway.id].id == 0, "pathway id already registered in brainstem");
         
-        ecosystemPathways[ecosystemId][pathway.id] = pathway;
-        emit PathwayCreated(pathway.id, pathway, ecosystemId);
+        brainstemPathways[brainstemId][pathway.id] = pathway;
+        emit PathwayCreated(pathway.id, pathway, brainstemId);
     }
 
-    function addEcosystemNeuron(uint256 ecosystemId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(ecosystems[ecosystemId].id != 0, "ecosystem id not found");
+    function addBrainstemNeuron(uint256 brainstemId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(brainstems[brainstemId].id != 0, "brainstem id not found");
         require(companies[neuronId].id != 0, "neuron id not found");
-        require(ecosystemCompanies[ecosystemId][neuronId].id == 0, "neuron already part of ecosystem");
+        require(brainstemCompanies[brainstemId][neuronId].id == 0, "neuron already part of brainstem");
         
-        ecosystemCompanies[ecosystemId][neuronId] = companies[neuronId];
-        emit EcosystemNeuronAdded(ecosystemId, neuronId);
+        brainstemCompanies[brainstemId][neuronId] = companies[neuronId];
+        emit BrainstemNeuronAdded(brainstemId, neuronId);
     }
 
-    function removeEcosystemNeuron(uint256 ecosystemId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(ecosystems[ecosystemId].id != 0, "ecosystem id not found");
+    function removeBrainstemNeuron(uint256 brainstemId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(brainstems[brainstemId].id != 0, "brainstem id not found");
         require(companies[neuronId].id != 0, "neuron id not found");
-        require(ecosystemCompanies[ecosystemId][neuronId].id != 0, "neuron not part of ecosystem");
-        require(ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId].length == 0, "neuron part of pathway");
+        require(brainstemCompanies[brainstemId][neuronId].id != 0, "neuron not part of brainstem");
+        require(brainstemCompaniesAssociatedPathways[brainstemId][neuronId].length == 0, "neuron part of pathway");
 
-        delete ecosystemCompanies[ecosystemId][neuronId];
-        emit EcosystemNeuronRemoved(ecosystemId, neuronId);
+        delete brainstemCompanies[brainstemId][neuronId];
+        emit BrainstemNeuronRemoved(brainstemId, neuronId);
     }
 
     function addUsers(
@@ -122,85 +122,85 @@ contract Membership is
         }
     }
 
-    function addPathwayNeuron(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(ecosystems[ecosystemId].id != 0, "ecosystem id not found");
-        require(ecosystemPathways[ecosystemId][pathwayId].id != 0, "pathway id not found");
+    function addPathwayNeuron(uint256 brainstemId, uint256 pathwayId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(brainstems[brainstemId].id != 0, "brainstem id not found");
+        require(brainstemPathways[brainstemId][pathwayId].id != 0, "pathway id not found");
         require(companies[neuronId].id != 0, "neuron id not found");
-        require(ecosystemCompanies[ecosystemId][neuronId].id != 0, "neuron not part of ecosystem");
-        require(ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId].length == 0, "neuron already part of pathway");
+        require(brainstemCompanies[brainstemId][neuronId].id != 0, "neuron not part of brainstem");
+        require(brainstemCompaniesAssociatedPathways[brainstemId][neuronId].length == 0, "neuron already part of pathway");
 
-        ecosystemPathwaysCompanies[ecosystemId][pathwayId][neuronId] = companies[neuronId];
-        ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId].push(pathwayId);
+        brainstemPathwaysCompanies[brainstemId][pathwayId][neuronId] = companies[neuronId];
+        brainstemCompaniesAssociatedPathways[brainstemId][neuronId].push(pathwayId);
 
-        emit PathwayNeuronAdded(ecosystemId, pathwayId, neuronId);
+        emit PathwayNeuronAdded(brainstemId, pathwayId, neuronId);
     }
 
-    function removePathwayNeuron(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(ecosystems[ecosystemId].id != 0, "ecosystem id not found");
-        require(ecosystemPathways[ecosystemId][pathwayId].id != 0, "pathway id not found");
+    function removePathwayNeuron(uint256 brainstemId, uint256 pathwayId, uint256 neuronId) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(brainstems[brainstemId].id != 0, "brainstem id not found");
+        require(brainstemPathways[brainstemId][pathwayId].id != 0, "pathway id not found");
         require(companies[neuronId].id != 0, "neuron id not found");
-        require(ecosystemCompanies[ecosystemId][neuronId].id != 0, "neuron not part of ecosystem");
-        require(ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId].length != 0, "neuron not part of pathway");
+        require(brainstemCompanies[brainstemId][neuronId].id != 0, "neuron not part of brainstem");
+        require(brainstemCompaniesAssociatedPathways[brainstemId][neuronId].length != 0, "neuron not part of pathway");
 
-        removePathwayFromNeuronAssociatedPathways(ecosystemId, pathwayId, neuronId);
-        delete ecosystemPathwaysCompanies[ecosystemId][pathwayId][neuronId];
+        removePathwayFromNeuronAssociatedPathways(brainstemId, pathwayId, neuronId);
+        delete brainstemPathwaysCompanies[brainstemId][pathwayId][neuronId];
 
-        emit PathwayNeuronRemoved(ecosystemId, pathwayId, neuronId);
+        emit PathwayNeuronRemoved(brainstemId, pathwayId, neuronId);
     }
 
-    function removePathwayFromNeuronAssociatedPathways(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId) internal {
-        for (uint256 i = 0; i < ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId].length; i++) {
-            if (ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId][i] == pathwayId) {
-                ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId][i] = ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId][ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId].length - 1];
-                ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId].pop();
+    function removePathwayFromNeuronAssociatedPathways(uint256 brainstemId, uint256 pathwayId, uint256 neuronId) internal {
+        for (uint256 i = 0; i < brainstemCompaniesAssociatedPathways[brainstemId][neuronId].length; i++) {
+            if (brainstemCompaniesAssociatedPathways[brainstemId][neuronId][i] == pathwayId) {
+                brainstemCompaniesAssociatedPathways[brainstemId][neuronId][i] = brainstemCompaniesAssociatedPathways[brainstemId][neuronId][brainstemCompaniesAssociatedPathways[brainstemId][neuronId].length - 1];
+                brainstemCompaniesAssociatedPathways[brainstemId][neuronId].pop();
                 break;
             }
         }
     }
 
     function registerAsset(
-        uint256 ecosystemId,
+        uint256 brainstemId,
         uint256 pathwayId,
         uint256 neuronId,
         uint256 assetId
     ) external override {
         require(assets.creatorOf(assetId) == msg.sender, "user not admin of asset");
         require(neuronUsers[neuronId][msg.sender], "user not part of the neuron");
-        require(!ecosystemPathwayAssets[ecosystemId][pathwayId][assetId], "asset already registered in pathway");
+        require(!brainstemPathwayAssets[brainstemId][pathwayId][assetId], "asset already registered in pathway");
 
-        ecosystemPathwayAssets[ecosystemId][pathwayId][assetId] = true;
-        emit AssetRegistered(ecosystemId, pathwayId, assetId);
+        brainstemPathwayAssets[brainstemId][pathwayId][assetId] = true;
+        emit AssetRegistered(brainstemId, pathwayId, assetId);
     }
 
-    function getEcosystem(uint256 id) external view override returns (Unit memory) {
-        return ecosystems[id];
+    function getBrainstem(uint256 id) external view override returns (Unit memory) {
+        return brainstems[id];
     }
 
     function getNeuron(uint256 id) external view override returns (Unit memory) {
         return companies[id];
     }
 
-    function getPathway(uint256 ecosystemId, uint256 pathwayId) external view override returns (Unit memory) {
-        return ecosystemPathways[ecosystemId][pathwayId];
+    function getPathway(uint256 brainstemId, uint256 pathwayId) external view override returns (Unit memory) {
+        return brainstemPathways[brainstemId][pathwayId];
     }
 
-    function getNeuronAssociatedPathways(uint256 ecosystemId, uint256 neuronId) external view override returns (uint256[] memory) {
-        return ecosystemCompaniesAssociatedPathways[ecosystemId][neuronId];
+    function getNeuronAssociatedPathways(uint256 brainstemId, uint256 neuronId) external view override returns (uint256[] memory) {
+        return brainstemCompaniesAssociatedPathways[brainstemId][neuronId];
     }
 
     function userInNeuron(uint256 neuronId, address user) external view override returns (bool) {
         return neuronUsers[neuronId][user];
     }
 
-    function neuronInEcosystem(uint256 ecosystemId, uint256 neuronId) external view override returns (bool) {
-        return ecosystemCompanies[ecosystemId][neuronId].id != 0;
+    function neuronInBrainstem(uint256 brainstemId, uint256 neuronId) external view override returns (bool) {
+        return brainstemCompanies[brainstemId][neuronId].id != 0;
     }
 
-    function neuronInPathway(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId) external view override returns (bool) {
-        return ecosystemPathwaysCompanies[ecosystemId][pathwayId][neuronId].id != 0;
+    function neuronInPathway(uint256 brainstemId, uint256 pathwayId, uint256 neuronId) external view override returns (bool) {
+        return brainstemPathwaysCompanies[brainstemId][pathwayId][neuronId].id != 0;
     }
 
-    function assetInPathway(uint256 ecosystemId, uint256 pathwayId, uint256 assetId) external view override returns (bool) {
-        return ecosystemPathwayAssets[ecosystemId][pathwayId][assetId];
+    function assetInPathway(uint256 brainstemId, uint256 pathwayId, uint256 assetId) external view override returns (bool) {
+        return brainstemPathwayAssets[brainstemId][pathwayId][assetId];
     }
 }

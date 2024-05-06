@@ -25,7 +25,7 @@ contract Access is
     Initializable,
     AccessControlEnumerableUpgradeable
 {
-    mapping (uint256 => mapping(uint256 => mapping(uint256 => AccessType))) private _ecosystemAssetPathwayAccess;
+    mapping (uint256 => mapping(uint256 => mapping(uint256 => AccessType))) private _brainstemAssetPathwayAccess;
 
     IAssets private _assets;
     IMembership private _membership;
@@ -48,27 +48,27 @@ contract Access is
         _membership = IMembership(membership);
     }
 
-    function _updateEcosystemPathwayAccess(uint256 assetId, uint256 ecosystem, uint256 pathway, AccessType access) private {
+    function _updateBrainstemPathwayAccess(uint256 assetId, uint256 brainstem, uint256 pathway, AccessType access) private {
         require(_assets.assetExists(assetId), "Access: Asset does not exist");
-        require(_membership.getEcosystem(ecosystem).id != 0, "Access: Ecosystem does not exist");
-        require(_membership.getPathway(ecosystem, pathway).id != 0, "Access: Pathway does not exist in ecosystem");
+        require(_membership.getBrainstem(brainstem).id != 0, "Access: Brainstem does not exist");
+        require(_membership.getPathway(brainstem, pathway).id != 0, "Access: Pathway does not exist in brainstem");
 
-        _ecosystemAssetPathwayAccess[ecosystem][assetId][pathway] = access;
-        emit EcosystemPathwayAccessUpdated(assetId, ecosystem, pathway, access);
+        _brainstemAssetPathwayAccess[brainstem][assetId][pathway] = access;
+        emit BrainstemPathwayAccessUpdated(assetId, brainstem, pathway, access);
     }
 
-    function updateEcosystemPathwayAccess(uint256 assetId, uint256 ecosystem, uint256 pathway, AccessType access) external onlyRole(DEFAULT_ADMIN_ROLE) override {
-        _updateEcosystemPathwayAccess(assetId, ecosystem, pathway, access);
+    function updateBrainstemPathwayAccess(uint256 assetId, uint256 brainstem, uint256 pathway, AccessType access) external onlyRole(DEFAULT_ADMIN_ROLE) override {
+        _updateBrainstemPathwayAccess(assetId, brainstem, pathway, access);
     }
 
-    function updateEcosystemPathwayAccessBatch(uint256[] memory assetIds, uint256[] memory ecosystems, uint256[] memory pathways, AccessType[] memory accesses) external onlyRole(DEFAULT_ADMIN_ROLE) override {
-        require(assetIds.length == ecosystems.length && ecosystems.length == pathways.length && pathways.length == accesses.length, "Access: Invalid input length");
+    function updateBrainstemPathwayAccessBatch(uint256[] memory assetIds, uint256[] memory brainstems, uint256[] memory pathways, AccessType[] memory accesses) external onlyRole(DEFAULT_ADMIN_ROLE) override {
+        require(assetIds.length == brainstems.length && brainstems.length == pathways.length && pathways.length == accesses.length, "Access: Invalid input length");
         for (uint256 i = 0; i < assetIds.length; i++) {
-            _updateEcosystemPathwayAccess(assetIds[i], ecosystems[i], pathways[i], accesses[i]);
+            _updateBrainstemPathwayAccess(assetIds[i], brainstems[i], pathways[i], accesses[i]);
         }
     }
 
-    function getEcosystemPathwayAccess(uint256 assetId, uint256 ecosystem, uint256 pathway) external view override returns (AccessType) {
-        return _ecosystemAssetPathwayAccess[ecosystem][assetId][pathway];
+    function getBrainstemPathwayAccess(uint256 assetId, uint256 brainstem, uint256 pathway) external view override returns (AccessType) {
+        return _brainstemAssetPathwayAccess[brainstem][assetId][pathway];
     }
 }

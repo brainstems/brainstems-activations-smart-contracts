@@ -17,7 +17,7 @@
 ## Quickstart
 
 ```
-git https://github.com/brainstems/brainstems-activations-smart-contracts.git
+git clone https://github.com/brainstems/brainstems-activations-smart-contracts.git
 npm install
 ```
 

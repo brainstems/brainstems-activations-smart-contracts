@@ -24,8 +24,8 @@ let Access,
   TestsNeuronUnit,
   TestsNeuronUnitTwo,
   TestsNeuronUnitThree,
-  TestsBrainstemUnit,
-  TestsBrainstemUnitTwo,
+  TestsPathwayUnit,
+  TestsPathwayUnitTwo,
   assetId,
   baseAssetId,
   contributors,
@@ -83,14 +83,14 @@ describe("Access: Grant Acceses", function () {
       name: "Sprite",
     }
 
-    TestsBrainstemUnit = {
+    TestsPathwayUnit = {
       id: 1n,
-      name: "Brainstems",
+      name: "Pathways",
     }
 
-    TestsBrainstemUnitTwo = {
+    TestsPathwayUnitTwo = {
       id: 2n,
-      name: "BrainstemsTwo",
+      name: "PathwaysTwo",
     }
 
     const EcosystemTx = await membership.createEcosystem(
@@ -113,17 +113,17 @@ describe("Access: Grant Acceses", function () {
     );
     await MemberTxThree.wait();
 
-    const BrainstemTx = await membership.createBrainstem(
-      TestsBrainstemUnit,
+    const PathwayTx = await membership.createPathway(
+      TestsPathwayUnit,
       TestsEcosystemUnit.id
     );
-    await BrainstemTx.wait();
+    await PathwayTx.wait();
 
-    const BrainstemTxTwo = await membership.createBrainstem(
-      TestsBrainstemUnitTwo,
+    const PathwayTxTwo = await membership.createPathway(
+      TestsPathwayUnitTwo,
       TestsEcosystemUnit.id
     );
-    await BrainstemTxTwo.wait();
+    await PathwayTxTwo.wait();
 
     await membership.addEcosystemNeuron(
       TestsEcosystemUnit.id,
@@ -155,15 +155,15 @@ describe("Access: Grant Acceses", function () {
       [user1.address]
     );
 
-    await membership.addBrainstemNeuron(
+    await membership.addPathwayNeuron(
       TestsEcosystemUnit.id,
-      TestsBrainstemUnit.id,
+      TestsPathwayUnit.id,
       TestsNeuronUnit.id
     );
 
-    await membership.addBrainstemNeuron(
+    await membership.addPathwayNeuron(
       TestsEcosystemUnit.id,
-      TestsBrainstemUnitTwo.id,
+      TestsPathwayUnitTwo.id,
       TestsNeuronUnitThree.id
     );
 
@@ -207,26 +207,26 @@ describe("Access: Grant Acceses", function () {
 
     AccessTypes = Enum("NO_ACCESS", "USAGE", "VALIDATION");
 
-    const accessTx = await accessContract.updateEcosystemBrainstemAccess(
+    const accessTx = await accessContract.updateEcosystemPathwayAccess(
       assetId,
       TestsEcosystemUnit.id,
-      TestsBrainstemUnit.id,
+      TestsPathwayUnit.id,
       AccessTypes.USAGE
     );
     await accessTx.wait();
   });
 
-  // TODO: useBrainstemAsset.
-  // TODO: useBrainstemAsset with invalid user.
-  // TODO: useBrainstemAsset with neuron not in brainstem.
-  // TODO: useBrainstemAsset with brainstem with no valid access.
+  // TODO: usePathwayAsset.
+  // TODO: usePathwayAsset with invalid user.
+  // TODO: usePathwayAsset with neuron not in pathway.
+  // TODO: usePathwayAsset with pathway with no valid access.
 
   describe("should be able to", function () {
-    it("execute a brainstem asset", async function () {
-      const tx = await execution.connect(user1).useBrainstemAsset(
+    it("execute a pathway asset", async function () {
+      const tx = await execution.connect(user1).usePathwayAsset(
         assetId,
         TestsEcosystemUnit.id,
-        TestsBrainstemUnit.id,
+        TestsPathwayUnit.id,
         TestsNeuronUnit.id,
         "0x"
       );
@@ -235,40 +235,40 @@ describe("Access: Grant Acceses", function () {
   });
 
   describe("should not be able to", function () {
-    it("execute a brainstem asset with invalid user", async function () {
+    it("execute a pathway asset with invalid user", async function () {
       await expect(
-        execution.useBrainstemAsset(
+        execution.usePathwayAsset(
           assetId,
           TestsEcosystemUnit.id,
-          TestsBrainstemUnit.id,
+          TestsPathwayUnit.id,
           TestsNeuronUnit.id,
           "0x"
         )
       ).to.be.revertedWith("Execution: User is not part of the neuron.");
     });
 
-    it("execute a brainstem asset with neuron not in brainstem", async function () {
+    it("execute a pathway asset with neuron not in pathway", async function () {
       await expect(
-        execution.connect(user1).useBrainstemAsset(
+        execution.connect(user1).usePathwayAsset(
           assetId,
           TestsEcosystemUnit.id,
-          TestsBrainstemUnitTwo.id,
+          TestsPathwayUnitTwo.id,
           TestsNeuronUnit.id,
           "0x"
         )
-      ).to.be.revertedWith("Execution: Neuron is not part of brainstem.");
+      ).to.be.revertedWith("Execution: Neuron is not part of pathway.");
     });
   });
 
-  it("execute a brainstem asset with brainstem with no valid access", async function () {
+  it("execute a pathway asset with pathway with no valid access", async function () {
     await expect(
-      execution.connect(user1).useBrainstemAsset(
+      execution.connect(user1).usePathwayAsset(
         assetId,
         TestsEcosystemUnit.id,
-        TestsBrainstemUnitTwo.id,
+        TestsPathwayUnitTwo.id,
         TestsNeuronUnitThree.id,
         "0x"
       )
-    ).to.be.revertedWith("Execution: Brainstem does not have access to the asset.");
+    ).to.be.revertedWith("Execution: Pathway does not have access to the asset.");
   });
 });

@@ -1,4 +1,4 @@
-# Brainstems Management Contracts for Brainstem, Pathways, Neurons, Activations and Assets (Agents, Models, Data fingerprinting)
+# Pathways Management Contracts for Pathway, Pathways, Neurons, Activations and Assets (Agents, Models, Data fingerprinting)
 
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
@@ -17,7 +17,7 @@
 ## Quickstart
 
 ```
-git clone https://github.com/brainstems/brainstems-activations-smart-contracts.git
+git clone https://github.com/pathways/pathways-activations-smart-contracts.git
 npm install
 ```
 
@@ -87,7 +87,7 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 ```
 
 
-## Brainstems :
+## Pathways :
 
 1- Deploy all contracts in the following order:
   - Assets
@@ -100,21 +100,21 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 3- Admin to Setup the Membership contract:
   - Create the Ecosystem. (`Membership.createEcosystem(ecosystem)`)
   - Create the Neuron. (`Membership.createNeuron(neuron)`)
-  - Create the Brainstem. (`Membership.createBrainstem(brainstem, ecosystemId)`)
+  - Create the Pathway. (`Membership.createPathway(pathway, ecosystemId)`)
   - Add the Neuron to the Ecosystem. (`Membership.addEcosystemNeuron(ecosystemId, neuronId)`)
-  - Add the Neuron to the Brainstem. (`Membership.addBrainstemNeuron(ecosystemId, brainstemId, neuron)`)
+  - Add the Neuron to the Pathway. (`Membership.addPathwayNeuron(ecosystemId, pathwayId, neuron)`)
   - Add the allowed users to the Neuron. (`Membership.addUsers(neuronId, users[])`)
 
 4- Admin to Setup the Access contract:
-  - Give access to the interactions assets for the created brainstem. (`Access.updateEcosystemBrainstemAccess(assetId, ecosystemId, brainstemId, access)`) (for users to be able to execute the interactions use USAGE access type, index 1).
+  - Give access to the interactions assets for the created pathway. (`Access.updateEcosystemPathwayAccess(assetId, ecosystemId, pathwayId, access)`) (for users to be able to execute the interactions use USAGE access type, index 1).
 
 5- Once contracts are deployed and setup, the flow is the following:
   - When new users want to be given access to execute the asset, admin should Add the allowed users to the Neuron. (`Membership.addUsers(neuronId, users[])`)
 ```
-  We want to validate that executions are valid and a prerequisit has been met, this is where the `bytes` param comes in. When a user tries to execute an asset it should call the function `Execution.useBrainstemAsset` with the following params:
+  We want to validate that executions are valid and a prerequisit has been met, this is where the `bytes` param comes in. When a user tries to execute an asset it should call the function `Execution.usePathwayAsset` with the following params:
     - assetId
     - ecosystemId
-    - brainstemId
+    - pathwayId
     - bytes (this should be the hash of the prerequisit that needs to be met)
 
   In this way, when the user interacts with JedAI and is able to receive an airdrop, we can request a signature from the backend, with a unique message (executionId + userAddress + interactionType) where:
@@ -134,12 +134,12 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 
   <br>
 
-  - For executing the asset, we can use the `Execution.useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 neuronId, bytes memory data)` method, and pass the `bytes` param as the hash of the prerequisit that needs to be met. In this case, asset id, ecosystem id, brainstem id and neuron id can be hardcoded, since there should only be one asset, ecosystem, brainstem and neuron for the airdrop system.
+  - For executing the asset, we can use the `Execution.usePathwayAsset(uint256 assetId, uint256 ecosystemId, uint256 pathwayId, uint256 neuronId, bytes memory data)` method, and pass the `bytes` param as the hash of the prerequisit that needs to be met. In this case, asset id, ecosystem id, pathway id and neuron id can be hardcoded, since there should only be one asset, ecosystem, pathway and neuron for the airdrop system.
 
 <br></br>
 
 ### Observations:
-  - When we refer to an `ecosystem`, `brainstem` or `neuron` we refer to the `Unit` struct composed by:
+  - When we refer to an `ecosystem`, `pathway` or `neuron` we refer to the `Unit` struct composed by:
     - `id` (uint256)
     - `name` (string)
   

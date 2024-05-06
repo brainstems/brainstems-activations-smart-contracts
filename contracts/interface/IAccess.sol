@@ -20,11 +20,11 @@ enum AccessType {
 }
 
 interface IAccess {
-    event EcosystemBrainstemAccessUpdated(uint256 indexed assetId, uint256 indexed ecosystem, uint256 indexed brainstem, AccessType access);
+    event EcosystemPathwayAccessUpdated(uint256 indexed assetId, uint256 indexed ecosystem, uint256 indexed pathway, AccessType access);
 
-    function updateEcosystemBrainstemAccess(uint256 assetId, uint256 ecosystem, uint256 brainstem, AccessType access) external;
+    function updateEcosystemPathwayAccess(uint256 assetId, uint256 ecosystem, uint256 pathway, AccessType access) external;
 
-    function updateEcosystemBrainstemAccessBatch(uint256[] memory assetIds, uint256[] memory ecosystems, uint256[] memory brainstems, AccessType[] memory accesses) external;
+    function updateEcosystemPathwayAccessBatch(uint256[] memory assetIds, uint256[] memory ecosystems, uint256[] memory pathways, AccessType[] memory accesses) external;
 
-    function getEcosystemBrainstemAccess(uint256 assetId, uint256 ecosystem, uint256 brainstem) external view returns (AccessType);
+    function getEcosystemPathwayAccess(uint256 assetId, uint256 ecosystem, uint256 pathway) external view returns (AccessType);
 }

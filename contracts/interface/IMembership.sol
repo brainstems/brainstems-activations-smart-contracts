@@ -21,7 +21,7 @@ interface IMembership {
 
     event EcosystemCreated(uint256 indexed id, Unit ecosystem);
     event NeuronCreated(uint256 indexed id, Unit neuron);
-    event BrainstemCreated(uint256 indexed id, Unit brainstem, uint256 ecosystemId);
+    event PathwayCreated(uint256 indexed id, Unit pathway, uint256 ecosystemId);
 
     event EcosystemNeuronAdded(uint256 indexed ecosystemId, uint256 indexed neuronId);
     event EcosystemNeuronRemoved(uint256 indexed ecosystemId, uint256 indexed neuronId);
@@ -29,10 +29,10 @@ interface IMembership {
     event UserAdded(uint256 indexed neuronId, address user);
     event UserRemoved(uint256 indexed neuronId, address user);
 
-    event BrainstemNeuronAdded(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed neuronId);
-    event BrainstemNeuronRemoved(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed neuronId);
+    event PathwayNeuronAdded(uint256 indexed ecosystemId, uint256 indexed pathwayId, uint256 indexed neuronId);
+    event PathwayNeuronRemoved(uint256 indexed ecosystemId, uint256 indexed pathwayId, uint256 indexed neuronId);
 
-    event AssetRegistered(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed assetId);
+    event AssetRegistered(uint256 indexed ecosystemId, uint256 indexed pathwayId, uint256 indexed assetId);
 
     /**
      * @notice Registers an ecosystem in the contract.
@@ -47,10 +47,10 @@ interface IMembership {
     function createNeuron(Unit calldata neuron) external;
 
     /**
-     * @notice Registers a brainstem within an ecosystem in the contract.
-     * @param brainstem object properties for the brainstem.
+     * @notice Registers a pathway within an ecosystem in the contract.
+     * @param pathway object properties for the pathway.
      */
-    function createBrainstem(Unit calldata brainstem, uint256 ecosystemId) external;
+    function createPathway(Unit calldata pathway, uint256 ecosystemId) external;
 
     /**
      * @notice Attaches a Neuron to an Ecosystem.
@@ -87,25 +87,25 @@ interface IMembership {
     ) external;
 
     /**
-     * @notice Attaches a Neuron to an Brainstem.
+     * @notice Attaches a Neuron to an Pathway.
      * @param ecosystemId identifier for the ecosystem.
-     * @param brainstemId identifier for the brainstem.
+     * @param pathwayId identifier for the pathway.
      * @param neuronId identifier for the neuron.
      */
-    function addBrainstemNeuron(uint256 ecosystemId, uint256 brainstemId, uint256 neuronId) external;
+    function addPathwayNeuron(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId) external;
 
     /**
-     * @notice Removes a Neuron from an Brainstem.
+     * @notice Removes a Neuron from an Pathway.
      * @param ecosystemId identifier for the ecosystem.
-     * @param brainstemId identifier for the brainstem.
+     * @param pathwayId identifier for the pathway.
      * @param neuronId identifier for the neuron.
      */
-    function removeBrainstemNeuron(uint256 ecosystemId, uint256 brainstemId, uint256 neuronId) external;
+    function removePathwayNeuron(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId) external;
 
     /**
-     * @notice Binds an asset to a brainstem.
+     * @notice Binds an asset to a pathway.
      */
-    function registerAsset(uint256 ecosystemId, uint256 brainstemId, uint256 neuronId, uint256 assetId) external;
+    function registerAsset(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId, uint256 assetId) external;
 
     /**
      * @notice Returns the detailed ecosystem identified by the provided id.
@@ -118,14 +118,14 @@ interface IMembership {
     function getNeuron(uint256 neuronId) external view returns (Unit memory);
 
     /**
-     * @notice Returns the detailed brainstem identified by the provided id.
+     * @notice Returns the detailed pathway identified by the provided id.
      */
-    function getBrainstem(uint256 ecosystemId, uint256 brainstemId) external view returns (Unit memory);
+    function getPathway(uint256 ecosystemId, uint256 pathwayId) external view returns (Unit memory);
 
     /**
-     * @notice Returns the list of associated brainstems for a given neuron in ecosystem.
+     * @notice Returns the list of associated pathways for a given neuron in ecosystem.
      */
-    function getNeuronAssociatedBrainstems(uint256 ecosystemId, uint256 neuronId) external view returns (uint256[] memory);
+    function getNeuronAssociatedPathways(uint256 ecosystemId, uint256 neuronId) external view returns (uint256[] memory);
 
     /**
      * @notice Returns if the given user belongs to a given neuron.
@@ -138,12 +138,12 @@ interface IMembership {
     function neuronInEcosystem(uint256 ecosystemId, uint256 neuronId) external view returns (bool);
     
     /**
-     * @notice Returns if the given neuron is in the given brainstem.
+     * @notice Returns if the given neuron is in the given pathway.
      */
-    function neuronInBrainstem(uint256 ecosystemId, uint256 brainstemId, uint256 neuronId) external view returns (bool);
+    function neuronInPathway(uint256 ecosystemId, uint256 pathwayId, uint256 neuronId) external view returns (bool);
 
     /**
-     * @notice Returns if the given asset is in the given brainstem.
+     * @notice Returns if the given asset is in the given pathway.
      */
-    function assetInBrainstem(uint256 ecosystemId, uint256 brainstemId, uint256 assetId) external view returns (bool);
+    function assetInPathway(uint256 ecosystemId, uint256 pathwayId, uint256 assetId) external view returns (bool);
 }

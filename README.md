@@ -151,4 +151,4 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
 
   The architecture was thought following the following thoughts diagram:
 
-  ![Architecture](./flow.jpg)
+  ![Architecture](./Brainstems_Hierarchy.png)

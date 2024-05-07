@@ -39,17 +39,17 @@ describe("Membership: Creation", function () {
 
     brainstemUnit = {
       id: 1n,
-      name: "Brainstem",
+      name: "Food service",
     }
 
     brainstemUnit2 = {
       id: 2n,
-      name: "Brainstem2",
+      name: "Automotive",
     }
 
     invalidBrainstemName = {
       id: 2n,
-      name: "Brainstem"
+      name: "Food service"
     }
 
     invalidBrainstemId = {
@@ -136,7 +136,7 @@ describe("Membership: Creation", function () {
     it("create an brainstem with invalid parameters", async function () {
       await expect(
         membership.createBrainstem(
-          { id: 0n, name: "Brainstem" }
+          { id: 0n, name: "Food service" }
         )
       ).to.be.revertedWith("brainstem id cannot be 0");
 

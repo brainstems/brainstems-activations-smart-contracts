@@ -19,131 +19,131 @@ interface IMembership {
         string name;
     }
 
-    event EcosystemCreated(uint256 indexed id, Unit ecosystem);
-    event CompanyCreated(uint256 indexed id, Unit company);
-    event BrainstemCreated(uint256 indexed id, Unit brainstem, uint256 ecosystemId);
+    event BrainstemCreated(uint256 indexed id, Unit brainstem);
+    event NeuronCreated(uint256 indexed id, Unit neuron);
+    event PathwayCreated(uint256 indexed id, Unit pathway, uint256 brainstemId);
 
-    event EcosystemCompanyAdded(uint256 indexed ecosystemId, uint256 indexed companyId);
-    event EcosystemCompanyRemoved(uint256 indexed ecosystemId, uint256 indexed companyId);
+    event BrainstemNeuronAdded(uint256 indexed brainstemId, uint256 indexed neuronId);
+    event BrainstemNeuronRemoved(uint256 indexed brainstemId, uint256 indexed neuronId);
     
-    event UserAdded(uint256 indexed companyId, address user);
-    event UserRemoved(uint256 indexed companyId, address user);
+    event UserAdded(uint256 indexed neuronId, address user);
+    event UserRemoved(uint256 indexed neuronId, address user);
 
-    event BrainstemCompanyAdded(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed companyId);
-    event BrainstemCompanyRemoved(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed companyId);
+    event PathwayNeuronAdded(uint256 indexed brainstemId, uint256 indexed pathwayId, uint256 indexed neuronId);
+    event PathwayNeuronRemoved(uint256 indexed brainstemId, uint256 indexed pathwayId, uint256 indexed neuronId);
 
-    event AssetRegistered(uint256 indexed ecosystemId, uint256 indexed brainstemId, uint256 indexed assetId);
-
-    /**
-     * @notice Registers an ecosystem in the contract.
-     * @param ecosystem object properties for the ecosystem.
-     */
-    function createEcosystem(Unit calldata ecosystem) external;
+    event AssetRegistered(uint256 indexed brainstemId, uint256 indexed pathwayId, uint256 indexed assetId);
 
     /**
-     * @notice Registers a company in the contract.
-     * @param company object properties for the company.
-     */
-    function createCompany(Unit calldata company) external;
-
-    /**
-     * @notice Registers a brainstem within an ecosystem in the contract.
+     * @notice Registers an brainstem in the contract.
      * @param brainstem object properties for the brainstem.
      */
-    function createBrainstem(Unit calldata brainstem, uint256 ecosystemId) external;
+    function createBrainstem(Unit calldata brainstem) external;
 
     /**
-     * @notice Attaches a Company to an Ecosystem.
-     * @param ecosystemId identifier for the ecosystem.
-     * @param companyId identifier for the company.
+     * @notice Registers a neuron in the contract.
+     * @param neuron object properties for the neuron.
      */
-    function addEcosystemCompany(uint256 ecosystemId, uint256 companyId) external;
+    function createNeuron(Unit calldata neuron) external;
 
     /**
-     * @notice Removes a Company from an Ecosystem.
-     * @param ecosystemId identifier for the ecosystem.
-     * @param companyId identifier for the company.
+     * @notice Registers a pathway within an brainstem in the contract.
+     * @param pathway object properties for the pathway.
      */
-    function removeEcosystemCompany(uint256 ecosystemId, uint256 companyId) external;
+    function createPathway(Unit calldata pathway, uint256 brainstemId) external;
 
     /**
-     * @notice Adds a user to a company within an ecosystem.
-     * @param companyId identifier for the company.
+     * @notice Attaches a Neuron to an Brainstem.
+     * @param brainstemId identifier for the brainstem.
+     * @param neuronId identifier for the neuron.
+     */
+    function addBrainstemNeuron(uint256 brainstemId, uint256 neuronId) external;
+
+    /**
+     * @notice Removes a Neuron from an Brainstem.
+     * @param brainstemId identifier for the brainstem.
+     * @param neuronId identifier for the neuron.
+     */
+    function removeBrainstemNeuron(uint256 brainstemId, uint256 neuronId) external;
+
+    /**
+     * @notice Adds a user to a neuron within an brainstem.
+     * @param neuronId identifier for the neuron.
      * @param users addresses of the users to add.
      */
     function addUsers(
-        uint256 companyId,
+        uint256 neuronId,
         address[] memory users
     ) external;
 
     /**
-     * @notice Remove a user to a company within an ecosystem.
-     * @param companyId identifier for the company.
+     * @notice Remove a user to a neuron within an brainstem.
+     * @param neuronId identifier for the neuron.
      * @param users addresses of the users.
      */
     function removeUsers(
-        uint256 companyId,
+        uint256 neuronId,
         address[] memory users
     ) external;
 
     /**
-     * @notice Attaches a Company to an Brainstem.
-     * @param ecosystemId identifier for the ecosystem.
+     * @notice Attaches a Neuron to an Pathway.
      * @param brainstemId identifier for the brainstem.
-     * @param companyId identifier for the company.
+     * @param pathwayId identifier for the pathway.
+     * @param neuronId identifier for the neuron.
      */
-    function addBrainstemCompany(uint256 ecosystemId, uint256 brainstemId, uint256 companyId) external;
+    function addPathwayNeuron(uint256 brainstemId, uint256 pathwayId, uint256 neuronId) external;
 
     /**
-     * @notice Removes a Company from an Brainstem.
-     * @param ecosystemId identifier for the ecosystem.
+     * @notice Removes a Neuron from an Pathway.
      * @param brainstemId identifier for the brainstem.
-     * @param companyId identifier for the company.
+     * @param pathwayId identifier for the pathway.
+     * @param neuronId identifier for the neuron.
      */
-    function removeBrainstemCompany(uint256 ecosystemId, uint256 brainstemId, uint256 companyId) external;
+    function removePathwayNeuron(uint256 brainstemId, uint256 pathwayId, uint256 neuronId) external;
 
     /**
-     * @notice Binds an asset to a brainstem.
+     * @notice Binds an asset to a pathway.
      */
-    function registerAsset(uint256 ecosystemId, uint256 brainstemId, uint256 companyId, uint256 assetId) external;
-
-    /**
-     * @notice Returns the detailed ecosystem identified by the provided id.
-     */
-    function getEcosystem(uint256 ecosystemId) external view returns (Unit memory);
-
-    /**
-     * @notice Returns the detailed company identified by the provided id.
-     */
-    function getCompany(uint256 companyId) external view returns (Unit memory);
+    function registerAsset(uint256 brainstemId, uint256 pathwayId, uint256 neuronId, uint256 assetId) external;
 
     /**
      * @notice Returns the detailed brainstem identified by the provided id.
      */
-    function getBrainstem(uint256 ecosystemId, uint256 brainstemId) external view returns (Unit memory);
+    function getBrainstem(uint256 brainstemId) external view returns (Unit memory);
 
     /**
-     * @notice Returns the list of associated brainstems for a given company in ecosystem.
+     * @notice Returns the detailed neuron identified by the provided id.
      */
-    function getCompanyAssociatedBrainstems(uint256 ecosystemId, uint256 companyId) external view returns (uint256[] memory);
+    function getNeuron(uint256 neuronId) external view returns (Unit memory);
 
     /**
-     * @notice Returns if the given user belongs to a given company.
+     * @notice Returns the detailed pathway identified by the provided id.
      */
-    function userInCompany(uint256 companyId, address user) external view returns (bool);
+    function getPathway(uint256 brainstemId, uint256 pathwayId) external view returns (Unit memory);
 
     /**
-     * @notice Returns if the given company belong to the given ecosystem.
+     * @notice Returns the list of associated pathways for a given neuron in brainstem.
      */
-    function companyInEcosystem(uint256 ecosystemId, uint256 companyId) external view returns (bool);
+    function getNeuronAssociatedPathways(uint256 brainstemId, uint256 neuronId) external view returns (uint256[] memory);
+
+    /**
+     * @notice Returns if the given user belongs to a given neuron.
+     */
+    function userInNeuron(uint256 neuronId, address user) external view returns (bool);
+
+    /**
+     * @notice Returns if the given neuron belong to the given brainstem.
+     */
+    function neuronInBrainstem(uint256 brainstemId, uint256 neuronId) external view returns (bool);
     
     /**
-     * @notice Returns if the given company is in the given brainstem.
+     * @notice Returns if the given neuron is in the given pathway.
      */
-    function companyInBrainstem(uint256 ecosystemId, uint256 brainstemId, uint256 companyId) external view returns (bool);
+    function neuronInPathway(uint256 brainstemId, uint256 pathwayId, uint256 neuronId) external view returns (bool);
 
     /**
-     * @notice Returns if the given asset is in the given brainstem.
+     * @notice Returns if the given asset is in the given pathway.
      */
-    function assetInBrainstem(uint256 ecosystemId, uint256 brainstemId, uint256 assetId) external view returns (bool);
+    function assetInPathway(uint256 brainstemId, uint256 pathwayId, uint256 assetId) external view returns (bool);
 }

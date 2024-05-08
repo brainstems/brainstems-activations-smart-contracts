@@ -5,14 +5,14 @@ const { BRAINSTEMS_TOKEN_NAME, BRAINSTEMS_TOKEN_SYMBOL, BRAINSTEMS_TOKEN_DECIMAL
 
 let owner,
   membership,
-  ecosystemUnit,
-  companyUnit,
-  companyUnitTwo,
   brainstemUnit,
-  errorTestsEcosystemUnit,
-  errorTestsCompanyUnit,
-  errorTestsCompanyUnitTwo,
+  neuronUnit,
+  neuronUnitTwo,
+  pathwayUnit,
   errorTestsBrainstemUnit,
+  errorTestsNeuronUnit,
+  errorTestsNeuronUnitTwo,
+  errorTestsPathwayUnit,
   user1,
   user2;
 
@@ -41,241 +41,241 @@ describe("Membership: Manage Units", function () {
     ]);
     await membership.waitForDeployment();
 
-    ecosystemUnit = {
-      id: 1n,
-      name: "Ecosystem",
-    }
-
-    companyUnit = {
-      id: 1n,
-      name: "Coca Cola",
-    }
-
-    companyUnitTwo = {
-      id: 20n,
-      name: "Pepsi",
-    }
-
     brainstemUnit = {
       id: 1n,
       name: "Brainstem",
     }
 
-    const ecosystemTx = await membership.createEcosystem(
-      ecosystemUnit
-    );
-    await ecosystemTx.wait();
+    neuronUnit = {
+      id: 1n,
+      name: "Coca Cola",
+    }
 
-    const memberTx = await membership.createCompany(
-      companyUnit
-    );
-    await memberTx.wait();
+    neuronUnitTwo = {
+      id: 20n,
+      name: "Pepsi",
+    }
 
-    const memberTxTwo = await membership.createCompany(
-      companyUnitTwo
-    );
-    await memberTxTwo.wait();
+    pathwayUnit = {
+      id: 1n,
+      name: "Pathway",
+    }
 
     const brainstemTx = await membership.createBrainstem(
-      brainstemUnit,
-      ecosystemUnit.id
+      brainstemUnit
     );
     await brainstemTx.wait();
 
+    const memberTx = await membership.createNeuron(
+      neuronUnit
+    );
+    await memberTx.wait();
+
+    const memberTxTwo = await membership.createNeuron(
+      neuronUnitTwo
+    );
+    await memberTxTwo.wait();
+
+    const pathwayTx = await membership.createPathway(
+      pathwayUnit,
+      brainstemUnit.id
+    );
+    await pathwayTx.wait();
+
     // Test data for error cases.
-    errorTestsEcosystemUnit = {
-      id: 2n,
-      name: "Ecosystem Two",
-    }
-
-    errorTestsCompanyUnit = {
-      id: 2n,
-      name: "Coca Cola Two",
-    }
-
-    errorTestsCompanyUnitTwo = {
-      id: 8n,
-      name: "Pepsi Two",
-    }
-
     errorTestsBrainstemUnit = {
       id: 2n,
       name: "Brainstem Two",
     }
 
-    const errorEcosystemTx = await membership.createEcosystem(
-      errorTestsEcosystemUnit
-    );
-    await errorEcosystemTx.wait();
+    errorTestsNeuronUnit = {
+      id: 2n,
+      name: "Coca Cola Two",
+    }
 
-    const errorMemberTx = await membership.createCompany(
-      errorTestsCompanyUnit
-    );
-    await errorMemberTx.wait();
+    errorTestsNeuronUnitTwo = {
+      id: 8n,
+      name: "Pepsi Two",
+    }
 
-    const errorMemberTxTwo = await membership.createCompany(
-      errorTestsCompanyUnitTwo
-    );
-    await errorMemberTxTwo.wait();
+    errorTestsPathwayUnit = {
+      id: 2n,
+      name: "Pathway Two",
+    }
 
     const errorBrainstemTx = await membership.createBrainstem(
-      errorTestsBrainstemUnit,
-      errorTestsEcosystemUnit.id
+      errorTestsBrainstemUnit
     );
     await errorBrainstemTx.wait();
 
-    await membership.addEcosystemCompany(
-      errorTestsEcosystemUnit.id,
-      errorTestsCompanyUnit.id
+    const errorMemberTx = await membership.createNeuron(
+      errorTestsNeuronUnit
     );
-    await membership.addEcosystemCompany(
-      errorTestsEcosystemUnit.id,
-      errorTestsCompanyUnitTwo.id
+    await errorMemberTx.wait();
+
+    const errorMemberTxTwo = await membership.createNeuron(
+      errorTestsNeuronUnitTwo
+    );
+    await errorMemberTxTwo.wait();
+
+    const errorPathwayTx = await membership.createPathway(
+      errorTestsPathwayUnit,
+      errorTestsBrainstemUnit.id
+    );
+    await errorPathwayTx.wait();
+
+    await membership.addBrainstemNeuron(
+      errorTestsBrainstemUnit.id,
+      errorTestsNeuronUnit.id
+    );
+    await membership.addBrainstemNeuron(
+      errorTestsBrainstemUnit.id,
+      errorTestsNeuronUnitTwo.id
     );
     await membership.addUsers(
-      errorTestsCompanyUnit.id,
+      errorTestsNeuronUnit.id,
       [user1.address]
     );
-    await membership.addBrainstemCompany(
-      errorTestsEcosystemUnit.id,
+    await membership.addPathwayNeuron(
       errorTestsBrainstemUnit.id,
-      errorTestsCompanyUnit.id
+      errorTestsPathwayUnit.id,
+      errorTestsNeuronUnit.id
     );
   });
 
   describe("should be able to", function () {
-    it("add a company to an ecosystem with valid parameters", async function () {
-      const tx = await membership.addEcosystemCompany(
-        ecosystemUnit.id,
-        companyUnit.id
+    it("add a neuron to an brainstem with valid parameters", async function () {
+      const tx = await membership.addBrainstemNeuron(
+        brainstemUnit.id,
+        neuronUnit.id
       );
       await tx.wait();
 
-      await verifyEvents(tx, membership, "EcosystemCompanyAdded", [
-        { ecosystemId: ecosystemUnit.id, memberId: companyUnit.id },
+      await verifyEvents(tx, membership, "BrainstemNeuronAdded", [
+        { brainstemId: brainstemUnit.id, memberId: neuronUnit.id },
       ]);
 
-      const contractCompanyAssociatedToEcosystem = await membership.companyInEcosystem(ecosystemUnit.id, companyUnit.id);
-      expect(contractCompanyAssociatedToEcosystem).to.equal(true);
+      const contractNeuronAssociatedToBrainstem = await membership.neuronInBrainstem(brainstemUnit.id, neuronUnit.id);
+      expect(contractNeuronAssociatedToBrainstem).to.equal(true);
 
-      const tx2 = await membership.addEcosystemCompany(
-        ecosystemUnit.id,
-        companyUnitTwo.id
+      const tx2 = await membership.addBrainstemNeuron(
+        brainstemUnit.id,
+        neuronUnitTwo.id
       );
       await tx2.wait();
 
-      await verifyEvents(tx2, membership, "EcosystemCompanyAdded", [
-        { ecosystemId: ecosystemUnit.id, memberId: companyUnitTwo.id },
+      await verifyEvents(tx2, membership, "BrainstemNeuronAdded", [
+        { brainstemId: brainstemUnit.id, memberId: neuronUnitTwo.id },
       ]);
 
-      const contractCompanyAssociatedToEcosystem2 = await membership.companyInEcosystem(ecosystemUnit.id, companyUnitTwo.id);
-      expect(contractCompanyAssociatedToEcosystem2).to.equal(true);
+      const contractNeuronAssociatedToBrainstem2 = await membership.neuronInBrainstem(brainstemUnit.id, neuronUnitTwo.id);
+      expect(contractNeuronAssociatedToBrainstem2).to.equal(true);
     });
 
-    it("remove a company from an ecosystem with valid parameters", async function () {
-      const tx = await membership.removeEcosystemCompany(
-        ecosystemUnit.id,
-        companyUnitTwo.id
+    it("remove a neuron from an brainstem with valid parameters", async function () {
+      const tx = await membership.removeBrainstemNeuron(
+        brainstemUnit.id,
+        neuronUnitTwo.id
       );
       await tx.wait();
 
-      await verifyEvents(tx, membership, "EcosystemCompanyRemoved", [
-        { ecosystemId: ecosystemUnit.id, memberId: companyUnitTwo.id },
+      await verifyEvents(tx, membership, "BrainstemNeuronRemoved", [
+        { brainstemId: brainstemUnit.id, memberId: neuronUnitTwo.id },
       ]);
 
-      const contractCompanyAssociatedToEcosystem = await membership.companyInEcosystem(ecosystemUnit.id, companyUnitTwo.id);
-      expect(contractCompanyAssociatedToEcosystem).to.equal(false);
+      const contractNeuronAssociatedToBrainstem = await membership.neuronInBrainstem(brainstemUnit.id, neuronUnitTwo.id);
+      expect(contractNeuronAssociatedToBrainstem).to.equal(false);
     });
 
-    it("add a user to a company with valid parameters", async function () {
+    it("add a user to a neuron with valid parameters", async function () {
       const tx = await membership.addUsers(
-        companyUnitTwo.id,
+        neuronUnitTwo.id,
         [user1.address]
       );
       await tx.wait();
 
       await verifyEvents(tx, membership, "UserAdded", [
-        { companyId: companyUnitTwo.id, user: user1.address },
+        { neuronId: neuronUnitTwo.id, user: user1.address },
       ]);
 
-      const contractUserAssociatedToCompany = await membership.userInCompany(companyUnitTwo.id, user1.address);
-      expect(contractUserAssociatedToCompany).to.equal(true);
+      const contractUserAssociatedToNeuron = await membership.userInNeuron(neuronUnitTwo.id, user1.address);
+      expect(contractUserAssociatedToNeuron).to.equal(true);
     });
 
-    it("remove a user from a company with valid parameters", async function () {
+    it("remove a user from a neuron with valid parameters", async function () {
       const tx = await membership.removeUsers(
-        companyUnitTwo.id,
+        neuronUnitTwo.id,
         [user1.address]
       );
       await tx.wait();
 
       await verifyEvents(tx, membership, "UserRemoved", [
-        { companyId: companyUnitTwo.id, user: user1.address },
+        { neuronId: neuronUnitTwo.id, user: user1.address },
       ]);
 
-      const contractUserAssociatedToCompany = await membership.userInCompany(companyUnitTwo.id, user1.address);
-      expect(contractUserAssociatedToCompany).to.equal(false);
+      const contractUserAssociatedToNeuron = await membership.userInNeuron(neuronUnitTwo.id, user1.address);
+      expect(contractUserAssociatedToNeuron).to.equal(false);
     });
 
-    it("add a company to a brainstem with valid parameters", async function () {
-      const tx = await membership.addBrainstemCompany(
-        ecosystemUnit.id,
+    it("add a neuron to a pathway with valid parameters", async function () {
+      const tx = await membership.addPathwayNeuron(
         brainstemUnit.id,
-        companyUnit.id
+        pathwayUnit.id,
+        neuronUnit.id
       );
       await tx.wait();
 
-      await verifyEvents(tx, membership, "BrainstemCompanyAdded", [
-        { ecosystemId: ecosystemUnit.id, brainstemId: brainstemUnit.id, memberId: companyUnit.id },
+      await verifyEvents(tx, membership, "PathwayNeuronAdded", [
+        { brainstemId: brainstemUnit.id, pathwayId: pathwayUnit.id, memberId: neuronUnit.id },
       ]);
 
-      const contractCompanyAssociatedToBrainstem = await membership.companyInBrainstem(ecosystemUnit.id, brainstemUnit.id, companyUnit.id);
-      expect(contractCompanyAssociatedToBrainstem).to.equal(true);
+      const contractNeuronAssociatedToPathway = await membership.neuronInPathway(brainstemUnit.id, pathwayUnit.id, neuronUnit.id);
+      expect(contractNeuronAssociatedToPathway).to.equal(true);
     });
 
-    it("remove a company from a brainstem with valid parameters", async function () {
-      const tx = await membership.removeBrainstemCompany(
-        ecosystemUnit.id,
+    it("remove a neuron from a pathway with valid parameters", async function () {
+      const tx = await membership.removePathwayNeuron(
         brainstemUnit.id,
-        companyUnit.id
+        pathwayUnit.id,
+        neuronUnit.id
       );
       await tx.wait();
 
-      await verifyEvents(tx, membership, "BrainstemCompanyRemoved", [
-        { ecosystemId: ecosystemUnit.id, brainstemId: brainstemUnit.id, memberId: companyUnit.id },
+      await verifyEvents(tx, membership, "PathwayNeuronRemoved", [
+        { brainstemId: brainstemUnit.id, pathwayId: pathwayUnit.id, memberId: neuronUnit.id },
       ]);
 
-      const contractCompanyAssociatedToBrainstem = await membership.companyInBrainstem(ecosystemUnit.id, brainstemUnit.id, companyUnit.id);
-      expect(contractCompanyAssociatedToBrainstem).to.equal(false);
+      const contractNeuronAssociatedToPathway = await membership.neuronInPathway(brainstemUnit.id, pathwayUnit.id, neuronUnit.id);
+      expect(contractNeuronAssociatedToPathway).to.equal(false);
     });
   });
 
   describe("should fail to", function () {
-    it("add a company to an ecosystem with invalid parameters", async function () {
-      const tx = membership.addEcosystemCompany(
-        errorTestsEcosystemUnit.id,
-        errorTestsCompanyUnit.id
+    it("add a neuron to an brainstem with invalid parameters", async function () {
+      const tx = membership.addBrainstemNeuron(
+        errorTestsBrainstemUnit.id,
+        errorTestsNeuronUnit.id
       );
-      await expect(tx).to.be.revertedWith("company already part of ecosystem");
+      await expect(tx).to.be.revertedWith("neuron already part of brainstem");
 
-      const tx2 = membership.addEcosystemCompany(
+      const tx2 = membership.addBrainstemNeuron(
         3n,
-        errorTestsCompanyUnit.id
+        errorTestsNeuronUnit.id
       );
-      await expect(tx2).to.be.revertedWith("ecosystem id not found");
+      await expect(tx2).to.be.revertedWith("brainstem id not found");
 
-      const tx3 = membership.addEcosystemCompany(
-        errorTestsEcosystemUnit.id,
+      const tx3 = membership.addBrainstemNeuron(
+        errorTestsBrainstemUnit.id,
         3n
       );
-      await expect(tx3).to.be.revertedWith("company id not found");
+      await expect(tx3).to.be.revertedWith("neuron id not found");
 
       await expect(
         membership
           .connect(user1)
-          .addEcosystemCompany(
-            errorTestsEcosystemUnit.id,
-            errorTestsCompanyUnit.id
+          .addBrainstemNeuron(
+            errorTestsBrainstemUnit.id,
+            errorTestsNeuronUnit.id
           )
       ).to.be.revertedWithCustomError(
         membership,
@@ -283,31 +283,31 @@ describe("Membership: Manage Units", function () {
       );
     });
 
-    it("remove a company from an ecosystem with invalid parameters", async function () {
-      const tx = membership.removeEcosystemCompany(
-        ecosystemUnit.id,
-        errorTestsCompanyUnit.id
+    it("remove a neuron from an brainstem with invalid parameters", async function () {
+      const tx = membership.removeBrainstemNeuron(
+        brainstemUnit.id,
+        errorTestsNeuronUnit.id
       );
-      await expect(tx).to.be.revertedWith("company not part of ecosystem");
+      await expect(tx).to.be.revertedWith("neuron not part of brainstem");
 
-      const tx2 = membership.removeEcosystemCompany(
+      const tx2 = membership.removeBrainstemNeuron(
         3n,
-        errorTestsCompanyUnit.id
+        errorTestsNeuronUnit.id
       );
-      await expect(tx2).to.be.revertedWith("ecosystem id not found");
+      await expect(tx2).to.be.revertedWith("brainstem id not found");
 
-      const tx3 = membership.removeEcosystemCompany(
-        errorTestsEcosystemUnit.id,
+      const tx3 = membership.removeBrainstemNeuron(
+        errorTestsBrainstemUnit.id,
         3n
       );
-      await expect(tx3).to.be.revertedWith("company id not found");
+      await expect(tx3).to.be.revertedWith("neuron id not found");
 
       await expect(
         membership
           .connect(user1)
-          .removeEcosystemCompany(
-            errorTestsEcosystemUnit.id,
-            errorTestsCompanyUnit.id
+          .removeBrainstemNeuron(
+            errorTestsBrainstemUnit.id,
+            errorTestsNeuronUnit.id
           )
       ).to.be.revertedWithCustomError(
         membership,
@@ -315,24 +315,24 @@ describe("Membership: Manage Units", function () {
       );
     });
 
-    it("add a user to a company with invalid parameters", async function () {
+    it("add a user to a neuron with invalid parameters", async function () {
       const tx = membership.addUsers(
-        errorTestsCompanyUnit.id,
+        errorTestsNeuronUnit.id,
         [user1.address]
       );
-      await expect(tx).to.be.revertedWith("user already part of company");
+      await expect(tx).to.be.revertedWith("user already part of neuron");
 
       const tx2 = membership.addUsers(
         3n,
         [user1.address]
       );
-      await expect(tx2).to.be.revertedWith("company id not found");
+      await expect(tx2).to.be.revertedWith("neuron id not found");
 
       await expect(
         membership
           .connect(user1)
           .addUsers(
-            errorTestsCompanyUnit.id,
+            errorTestsNeuronUnit.id,
             [user1.address]
           )
       ).to.be.revertedWithCustomError(
@@ -341,24 +341,24 @@ describe("Membership: Manage Units", function () {
       );
     });
 
-    it("remove a user from a company with invalid parameters", async function () {
+    it("remove a user from a neuron with invalid parameters", async function () {
       const tx = membership.removeUsers(
-        errorTestsCompanyUnit.id,
+        errorTestsNeuronUnit.id,
         [user2.address]
       );
-      await expect(tx).to.be.revertedWith("user not part of company");
+      await expect(tx).to.be.revertedWith("user not part of neuron");
 
       const tx2 = membership.removeUsers(
         3n,
         [user1.address]
       );
-      await expect(tx2).to.be.revertedWith("company id not found");
+      await expect(tx2).to.be.revertedWith("neuron id not found");
 
       await expect(
         membership
           .connect(user1)
           .removeUsers(
-            errorTestsCompanyUnit.id,
+            errorTestsNeuronUnit.id,
             [user1.address]
           )
       ).to.be.revertedWithCustomError(
@@ -367,42 +367,42 @@ describe("Membership: Manage Units", function () {
       );
     });
 
-    it("add a company to a brainstem with invalid parameters", async function () {
-      const tx = membership.addBrainstemCompany(
-        errorTestsEcosystemUnit.id,
+    it("add a neuron to a pathway with invalid parameters", async function () {
+      const tx = membership.addPathwayNeuron(
         errorTestsBrainstemUnit.id,
-        errorTestsCompanyUnit.id
+        errorTestsPathwayUnit.id,
+        errorTestsNeuronUnit.id
       );
-      await expect(tx).to.be.revertedWith("company already part of brainstem");
+      await expect(tx).to.be.revertedWith("neuron already part of pathway");
 
-      const tx2 = membership.addBrainstemCompany(
+      const tx2 = membership.addPathwayNeuron(
         3n,
-        errorTestsBrainstemUnit.id,
-        errorTestsCompanyUnit.id
+        errorTestsPathwayUnit.id,
+        errorTestsNeuronUnit.id
       );
-      await expect(tx2).to.be.revertedWith("ecosystem id not found");
+      await expect(tx2).to.be.revertedWith("brainstem id not found");
 
-      const tx3 = membership.addBrainstemCompany(
-        errorTestsEcosystemUnit.id,
+      const tx3 = membership.addPathwayNeuron(
+        errorTestsBrainstemUnit.id,
         3n,
-        errorTestsCompanyUnit.id
+        errorTestsNeuronUnit.id
       );
-      await expect(tx3).to.be.revertedWith("brainstem id not found");
+      await expect(tx3).to.be.revertedWith("pathway id not found");
 
-      const tx4 = membership.addBrainstemCompany(
-        errorTestsEcosystemUnit.id,
+      const tx4 = membership.addPathwayNeuron(
         errorTestsBrainstemUnit.id,
+        errorTestsPathwayUnit.id,
         3n
       );
-      await expect(tx4).to.be.revertedWith("company id not found");
+      await expect(tx4).to.be.revertedWith("neuron id not found");
 
       await expect(
         membership
           .connect(user1)
-          .addBrainstemCompany(
-            errorTestsEcosystemUnit.id,
+          .addPathwayNeuron(
             errorTestsBrainstemUnit.id,
-            errorTestsCompanyUnit.id
+            errorTestsPathwayUnit.id,
+            errorTestsNeuronUnit.id
           )
       ).to.be.revertedWithCustomError(
         membership,
@@ -410,42 +410,42 @@ describe("Membership: Manage Units", function () {
       );
     });
 
-    it("remove a company from a brainstem with invalid parameters", async function () {
-      const tx = membership.removeBrainstemCompany(
-        errorTestsEcosystemUnit.id,
+    it("remove a neuron from a pathway with invalid parameters", async function () {
+      const tx = membership.removePathwayNeuron(
         errorTestsBrainstemUnit.id,
-        errorTestsCompanyUnitTwo.id
+        errorTestsPathwayUnit.id,
+        errorTestsNeuronUnitTwo.id
       );
-      await expect(tx).to.be.revertedWith("company not part of brainstem");
+      await expect(tx).to.be.revertedWith("neuron not part of pathway");
 
-      const tx2 = membership.removeBrainstemCompany(
+      const tx2 = membership.removePathwayNeuron(
         3n,
-        errorTestsBrainstemUnit.id,
-        errorTestsCompanyUnit.id
+        errorTestsPathwayUnit.id,
+        errorTestsNeuronUnit.id
       );
-      await expect(tx2).to.be.revertedWith("ecosystem id not found");
+      await expect(tx2).to.be.revertedWith("brainstem id not found");
 
-      const tx3 = membership.removeBrainstemCompany(
-        errorTestsEcosystemUnit.id,
+      const tx3 = membership.removePathwayNeuron(
+        errorTestsBrainstemUnit.id,
         3n,
-        errorTestsCompanyUnit.id
+        errorTestsNeuronUnit.id
       );
-      await expect(tx3).to.be.revertedWith("brainstem id not found");
+      await expect(tx3).to.be.revertedWith("pathway id not found");
 
-      const tx4 = membership.removeBrainstemCompany(
-        errorTestsEcosystemUnit.id,
+      const tx4 = membership.removePathwayNeuron(
         errorTestsBrainstemUnit.id,
+        errorTestsPathwayUnit.id,
         3n
       );
-      await expect(tx4).to.be.revertedWith("company id not found");
+      await expect(tx4).to.be.revertedWith("neuron id not found");
 
       await expect(
         membership
           .connect(user1)
-          .removeBrainstemCompany(
-            errorTestsEcosystemUnit.id,
+          .removePathwayNeuron(
             errorTestsBrainstemUnit.id,
-            errorTestsCompanyUnit.id
+            errorTestsPathwayUnit.id,
+            errorTestsNeuronUnit.id
           )
       ).to.be.revertedWithCustomError(
         membership,

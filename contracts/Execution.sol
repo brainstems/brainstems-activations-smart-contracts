@@ -25,8 +25,8 @@ contract Execution is
   IExecution,
   AccessControlEnumerableUpgradeable
 {
-    mapping(uint256 => mapping(uint256 => Execution)) private assetBrainstemExecutions;
-    mapping(uint256 => uint256) private assetBrainstemExecutionId;
+    mapping(uint256 => mapping(uint256 => Execution)) private assetPathwayExecutions;
+    mapping(uint256 => uint256) private assetPathwayExecutionId;
 
     IAccess private _access;
     IMembership private _membership;
@@ -49,30 +49,30 @@ contract Execution is
         _membership = IMembership(membership);
     }
 
-    function useBrainstemAsset(uint256 assetId, uint256 ecosystemId, uint256 brainstemId, uint256 companyId, bytes memory data) external override {
-      require(_membership.userInCompany(companyId, msg.sender), "Execution: User is not part of the company.");
-      require(_membership.companyInBrainstem(ecosystemId, brainstemId, companyId), "Execution: Company is not part of brainstem.");
+    function usePathwayAsset(uint256 assetId, uint256 brainstemId, uint256 pathwayId, uint256 neuronId, bytes memory data) external override {
+      require(_membership.userInNeuron(neuronId, msg.sender), "Execution: User is not part of the neuron.");
+      require(_membership.neuronInPathway(brainstemId, pathwayId, neuronId), "Execution: Neuron is not part of pathway.");
 
-      AccessType hasAccess = _access.getEcosystemBrainstemAccess(assetId, ecosystemId, brainstemId);
-      require(hasAccess == AccessType.USAGE, "Execution: Brainstem does not have access to the asset.");
+      AccessType hasAccess = _access.getBrainstemPathwayAccess(assetId, brainstemId, pathwayId);
+      require(hasAccess == AccessType.USAGE, "Execution: Pathway does not have access to the asset.");
 
       Execution memory execution = Execution({
-        id: assetBrainstemExecutionId[assetId],
+        id: assetPathwayExecutionId[assetId],
         assetId: assetId,
-        ecosystemId: ecosystemId,
         brainstemId: brainstemId,
-        companyId: companyId,
+        pathwayId: pathwayId,
+        neuronId: neuronId,
         executor: msg.sender,
         data: data
       });
 
-      assetBrainstemExecutions[assetId][assetBrainstemExecutionId[assetId]] = execution;
-      assetBrainstemExecutionId[assetId] += 1;
+      assetPathwayExecutions[assetId][assetPathwayExecutionId[assetId]] = execution;
+      assetPathwayExecutionId[assetId] += 1;
 
-      emit AssetUsed(assetId, ecosystemId, brainstemId, companyId, msg.sender, execution.id, data);
+      emit AssetUsed(assetId, brainstemId, pathwayId, neuronId, msg.sender, execution.id, data);
     }
 
-    function queryBrainstemAssetUse(uint256 assetId, uint256 executionId) external view override returns (Execution memory) {
-      return assetBrainstemExecutions[assetId][executionId];
+    function queryPathwayAssetUse(uint256 assetId, uint256 executionId) external view override returns (Execution memory) {
+      return assetPathwayExecutions[assetId][executionId];
     }
 }

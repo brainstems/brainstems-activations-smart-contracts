@@ -20,10 +20,10 @@ let Access,
   user1,
   user2,
   user3,
-  TestsEcosystemUnit,
-  TestsCompanyUnit,
   TestsBrainstemUnit,
-  TestsBrainstemUnitTwo,
+  TestsNeuronUnit,
+  TestsPathwayUnit,
+  TestsPathwayUnitTwo,
   assetId,
   baseAssetId,
   contributors,
@@ -61,62 +61,62 @@ describe("Access: Grant Acceses", function () {
       membership.target
     ]);
 
-    TestsEcosystemUnit = {
+    TestsBrainstemUnit = {
       id: 1n,
-      name: "Ecosystem",
+      name: "Brainstem",
     }
 
-    TestsCompanyUnit = {
+    TestsNeuronUnit = {
       id: 1n,
       name: "Coca Cola",
     }
 
-    TestsBrainstemUnit = {
+    TestsPathwayUnit = {
       id: 1n,
-      name: "Brainstems",
+      name: "Pathways",
     }
 
-    TestsBrainstemUnitTwo = {
+    TestsPathwayUnitTwo = {
       id: 2n,
-      name: "BrainstemsTwo",
+      name: "PathwaysTwo",
     }
-
-    const EcosystemTx = await membership.createEcosystem(
-      TestsEcosystemUnit
-    );
-    await EcosystemTx.wait();
-
-    const MemberTx = await membership.createCompany(
-      TestsCompanyUnit
-    );
-    await MemberTx.wait();
 
     const BrainstemTx = await membership.createBrainstem(
-      TestsBrainstemUnit,
-      TestsEcosystemUnit.id
+      TestsBrainstemUnit
     );
     await BrainstemTx.wait();
 
-    const BrainstemTxTwo = await membership.createBrainstem(
-      TestsBrainstemUnitTwo,
-      TestsEcosystemUnit.id
+    const MemberTx = await membership.createNeuron(
+      TestsNeuronUnit
     );
-    await BrainstemTxTwo.wait();
+    await MemberTx.wait();
 
-    await membership.addEcosystemCompany(
-      TestsEcosystemUnit.id,
-      TestsCompanyUnit.id
+    const PathwayTx = await membership.createPathway(
+      TestsPathwayUnit,
+      TestsBrainstemUnit.id
+    );
+    await PathwayTx.wait();
+
+    const PathwayTxTwo = await membership.createPathway(
+      TestsPathwayUnitTwo,
+      TestsBrainstemUnit.id
+    );
+    await PathwayTxTwo.wait();
+
+    await membership.addBrainstemNeuron(
+      TestsBrainstemUnit.id,
+      TestsNeuronUnit.id
     );
 
     await membership.addUsers(
-      TestsCompanyUnit.id,
+      TestsNeuronUnit.id,
       [user1.address]
     );
 
-    await membership.addBrainstemCompany(
-      TestsEcosystemUnit.id,
+    await membership.addPathwayNeuron(
       TestsBrainstemUnit.id,
-      TestsCompanyUnit.id
+      TestsPathwayUnit.id,
+      TestsNeuronUnit.id
     );
 
     // Asset Creation
@@ -154,119 +154,119 @@ describe("Access: Grant Acceses", function () {
   });
 
   describe("should be able to", function () {
-    it("give access USAGE access to a brainstem", async function () {
-      const tx = await accessContract.updateEcosystemBrainstemAccess(
+    it("give access USAGE access to a pathway", async function () {
+      const tx = await accessContract.updateBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
         TestsBrainstemUnit.id,
+        TestsPathwayUnit.id,
         AccessTypes.USAGE
       );
       await tx.wait();
 
-      await verifyEvents(tx, accessContract, "EcosystemBrainstemAccessUpdated", [
+      await verifyEvents(tx, accessContract, "BrainstemPathwayAccessUpdated", [
         {
           assetId: assetId,
-          ecosystemId: TestsEcosystemUnit.id,
           brainstemId: TestsBrainstemUnit.id,
+          pathwayId: TestsPathwayUnit.id,
           access: AccessTypes.USAGE
         },
       ]);
 
-      const hasAccess = await accessContract.getEcosystemBrainstemAccess(
+      const hasAccess = await accessContract.getBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
-        TestsBrainstemUnit.id
+        TestsBrainstemUnit.id,
+        TestsPathwayUnit.id
       );
       expect(hasAccess).to.equal(AccessTypes.USAGE);
     });
 
-    it("give access VALIDATION access to a brainstem", async function () {
-      const tx = await accessContract.updateEcosystemBrainstemAccess(
+    it("give access VALIDATION access to a pathway", async function () {
+      const tx = await accessContract.updateBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
         TestsBrainstemUnit.id,
+        TestsPathwayUnit.id,
         AccessTypes.VALIDATION
       );
       await tx.wait();
 
-      await verifyEvents(tx, accessContract, "EcosystemBrainstemAccessUpdated", [
+      await verifyEvents(tx, accessContract, "BrainstemPathwayAccessUpdated", [
         {
           assetId: assetId,
-          ecosystemId: TestsEcosystemUnit.id,
           brainstemId: TestsBrainstemUnit.id,
+          pathwayId: TestsPathwayUnit.id,
           access: AccessTypes.VALIDATION
         },
       ]);
 
-      const hasAccess = await accessContract.getEcosystemBrainstemAccess(
+      const hasAccess = await accessContract.getBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
-        TestsBrainstemUnit.id
+        TestsBrainstemUnit.id,
+        TestsPathwayUnit.id
       );
       expect(hasAccess).to.equal(AccessTypes.VALIDATION);
     });
 
-    it("give access to multiple brainstems at once", async function () {
-      const tx = await accessContract.updateEcosystemBrainstemAccessBatch(
+    it("give access to multiple pathways at once", async function () {
+      const tx = await accessContract.updateBrainstemPathwayAccessBatch(
         [assetId, assetId],
-        [TestsEcosystemUnit.id, TestsEcosystemUnit.id],
-        [TestsBrainstemUnit.id, TestsBrainstemUnitTwo.id],
+        [TestsBrainstemUnit.id, TestsBrainstemUnit.id],
+        [TestsPathwayUnit.id, TestsPathwayUnitTwo.id],
         [AccessTypes.USAGE, AccessTypes.VALIDATION]
       );
       await tx.wait();
 
-      await verifyEvents(tx, accessContract, "EcosystemBrainstemAccessUpdated", [
+      await verifyEvents(tx, accessContract, "BrainstemPathwayAccessUpdated", [
         {
           assetId: assetId,
-          ecosystemId: TestsEcosystemUnit.id,
           brainstemId: TestsBrainstemUnit.id,
+          pathwayId: TestsPathwayUnit.id,
           access: AccessTypes.USAGE
         },
         {
           assetId: assetId,
-          ecosystemId: TestsEcosystemUnit.id,
-          brainstemId: TestsBrainstemUnitTwo.id,
+          brainstemId: TestsBrainstemUnit.id,
+          pathwayId: TestsPathwayUnitTwo.id,
           access: AccessTypes.VALIDATION
         },
       ]);
 
-      const hasAccess = await accessContract.getEcosystemBrainstemAccess(
+      const hasAccess = await accessContract.getBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
-        TestsBrainstemUnit.id
+        TestsBrainstemUnit.id,
+        TestsPathwayUnit.id
       );
       expect(hasAccess).to.equal(AccessTypes.USAGE);
 
-      const hasAccessTwo = await accessContract.getEcosystemBrainstemAccess(
+      const hasAccessTwo = await accessContract.getBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
-        TestsBrainstemUnitTwo.id
+        TestsBrainstemUnit.id,
+        TestsPathwayUnitTwo.id
       );
       expect(hasAccessTwo).to.equal(AccessTypes.VALIDATION);
     });
 
-    it("remove access to a brainstem", async function () {
-      const tx = await accessContract.updateEcosystemBrainstemAccess(
+    it("remove access to a pathway", async function () {
+      const tx = await accessContract.updateBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
         TestsBrainstemUnit.id,
+        TestsPathwayUnit.id,
         AccessTypes.NO_ACCESS
       );
       await tx.wait();
 
-      await verifyEvents(tx, accessContract, "EcosystemBrainstemAccessUpdated", [
+      await verifyEvents(tx, accessContract, "BrainstemPathwayAccessUpdated", [
         {
           assetId: assetId,
-          ecosystemId: TestsEcosystemUnit.id,
           brainstemId: TestsBrainstemUnit.id,
+          pathwayId: TestsPathwayUnit.id,
           access: AccessTypes.NO_ACCESS
         },
       ]);
 
-      const hasAccess = await accessContract.getEcosystemBrainstemAccess(
+      const hasAccess = await accessContract.getBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
-        TestsBrainstemUnit.id
+        TestsBrainstemUnit.id,
+        TestsPathwayUnit.id
       );
       expect(hasAccess).to.equal(AccessTypes.NO_ACCESS);
     });
@@ -274,10 +274,10 @@ describe("Access: Grant Acceses", function () {
 
   describe("should not be able to", function () {
     it("give access from non-owner", async function () {
-      const tx = accessContract.connect(user1).updateEcosystemBrainstemAccess(
+      const tx = accessContract.connect(user1).updateBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
         TestsBrainstemUnit.id,
+        TestsPathwayUnit.id,
         AccessTypes.USAGE
       );
       await expect(tx).to.be.revertedWithCustomError(
@@ -286,38 +286,38 @@ describe("Access: Grant Acceses", function () {
       );
     });
 
-    it("give access to a non-existent brainstem", async function () {
-      const tx = accessContract.updateEcosystemBrainstemAccess(
+    it("give access to a non-existent pathway", async function () {
+      const tx = accessContract.updateBrainstemPathwayAccess(
         assetId,
-        TestsEcosystemUnit.id,
+        TestsBrainstemUnit.id,
         999n,
         AccessTypes.USAGE
       );
-      await expect(tx).to.be.revertedWith("Access: Brainstem does not exist in ecosystem");
+      await expect(tx).to.be.revertedWith("Access: Pathway does not exist in brainstem");
     });
 
-    it("give access to a non-existent ecosystem", async function () {
-      const tx = accessContract.updateEcosystemBrainstemAccess(
+    it("give access to a non-existent brainstem", async function () {
+      const tx = accessContract.updateBrainstemPathwayAccess(
         assetId,
         999n,
-        TestsBrainstemUnit.id,
+        TestsPathwayUnit.id,
         AccessTypes.USAGE
       );
-      await expect(tx).to.be.revertedWith("Access: Ecosystem does not exist");
+      await expect(tx).to.be.revertedWith("Access: Brainstem does not exist");
     });
 
     it("give access to a non-existent asset", async function () {
-      const tx = accessContract.updateEcosystemBrainstemAccess(
+      const tx = accessContract.updateBrainstemPathwayAccess(
         999n,
-        TestsEcosystemUnit.id,
         TestsBrainstemUnit.id,
+        TestsPathwayUnit.id,
         AccessTypes.USAGE
       );
       await expect(tx).to.be.revertedWith("Access: Asset does not exist");
     });
 
-    it("give access to a non-existent asset, ecosystem, and brainstem", async function () {
-      const tx = accessContract.updateEcosystemBrainstemAccess(
+    it("give access to a non-existent asset, brainstem, and pathway", async function () {
+      const tx = accessContract.updateBrainstemPathwayAccess(
         999n,
         999n,
         999n,

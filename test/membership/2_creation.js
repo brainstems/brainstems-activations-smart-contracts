@@ -6,10 +6,10 @@ const { BRAINSTEMS_TOKEN_NAME, BRAINSTEMS_TOKEN_SYMBOL, BRAINSTEMS_TOKEN_DECIMAL
 let owner,
   user1,
   membership,
-  ecosystemUnit,
-  ecosystemUnit2,
-  invalidEcosystemName,
-  invalidEcosystemId,
+  brainstemUnit,
+  brainstemUnit2,
+  invalidBrainstemName,
+  invalidBrainstemId,
   memberUnit;
 
 describe("Membership: Creation", function () {
@@ -37,22 +37,22 @@ describe("Membership: Creation", function () {
     ]);
     await membership.waitForDeployment();
 
-    ecosystemUnit = {
+    brainstemUnit = {
       id: 1n,
-      name: "Ecosystem",
+      name: "Food service",
     }
 
-    ecosystemUnit2 = {
+    brainstemUnit2 = {
       id: 2n,
-      name: "Ecosystem2",
+      name: "Automotive",
     }
 
-    invalidEcosystemName = {
+    invalidBrainstemName = {
       id: 2n,
-      name: "Ecosystem"
+      name: "Food service"
     }
 
-    invalidEcosystemId = {
+    invalidBrainstemId = {
       id: 1n,
       name: "Invalid"
     }
@@ -62,58 +62,16 @@ describe("Membership: Creation", function () {
       name: "Member",
     }
 
-    brainstemUnit = {
+    pathwayUnit = {
       id: 1n,
-      name: "Brainstem",
+      name: "Pathway",
     }
   });
 
   describe("should be able to", function () {
-    it("create an ecosystem with valid parameters", async function () {
-      const tx = await membership.createEcosystem(
-        ecosystemUnit
-      );
-      await tx.wait();
-
-      const expectedEcosystem = [
-        ecosystemUnit.id,
-        ecosystemUnit.name
-      ];
-
-      await verifyEvents(tx, membership, "EcosystemCreated", [
-        { id: ecosystemUnit.id, ecosystem: expectedEcosystem },
-      ]);
-
-      const contractEcosystem = await membership.getEcosystem(ecosystemUnit.id);
-      expect(contractEcosystem.name).to.equal(ecosystemUnit.name);
-      expect(contractEcosystem.id).to.equal(ecosystemUnit.id);
-    });
-
-    it("create a company with valid parameters", async function () {
-      const tx = await membership.createCompany(
-        memberUnit
-      );
-      await tx.wait();
-
-      const expectedCompany = [
-        memberUnit.id,
-        memberUnit.name
-      ];
-
-      await verifyEvents(tx, membership, "CompanyCreated", [
-        { id: memberUnit.id, company: expectedCompany },
-      ]);
-
-      const contractEcosystem = await membership.getCompany(memberUnit.id);
-      expect(contractEcosystem.name).to.equal(memberUnit.name);
-      expect(contractEcosystem.id).to.equal(memberUnit.id);
-    });
-
-    it("create a brainstem with valid parameters", async function() {
-      const ecosystemId = 1n;
+    it("create an brainstem with valid parameters", async function () {
       const tx = await membership.createBrainstem(
-        brainstemUnit,
-        ecosystemId
+        brainstemUnit
       );
       await tx.wait();
 
@@ -123,96 +81,138 @@ describe("Membership: Creation", function () {
       ];
 
       await verifyEvents(tx, membership, "BrainstemCreated", [
-        { id: brainstemUnit.id, brainstem: expectedBrainstem, ecosystemId },
+        { id: brainstemUnit.id, brainstem: expectedBrainstem },
       ]);
 
-      const contractBrainstem = await membership.getBrainstem(ecosystemId, brainstemUnit.id);
+      const contractBrainstem = await membership.getBrainstem(brainstemUnit.id);
       expect(contractBrainstem.name).to.equal(brainstemUnit.name);
       expect(contractBrainstem.id).to.equal(brainstemUnit.id);
+    });
+
+    it("create a neuron with valid parameters", async function () {
+      const tx = await membership.createNeuron(
+        memberUnit
+      );
+      await tx.wait();
+
+      const expectedNeuron = [
+        memberUnit.id,
+        memberUnit.name
+      ];
+
+      await verifyEvents(tx, membership, "NeuronCreated", [
+        { id: memberUnit.id, neuron: expectedNeuron },
+      ]);
+
+      const contractBrainstem = await membership.getNeuron(memberUnit.id);
+      expect(contractBrainstem.name).to.equal(memberUnit.name);
+      expect(contractBrainstem.id).to.equal(memberUnit.id);
+    });
+
+    it("create a pathway with valid parameters", async function() {
+      const brainstemId = 1n;
+      const tx = await membership.createPathway(
+        pathwayUnit,
+        brainstemId
+      );
+      await tx.wait();
+
+      const expectedPathway = [
+        pathwayUnit.id,
+        pathwayUnit.name
+      ];
+
+      await verifyEvents(tx, membership, "PathwayCreated", [
+        { id: pathwayUnit.id, pathway: expectedPathway, brainstemId },
+      ]);
+
+      const contractPathway = await membership.getPathway(brainstemId, pathwayUnit.id);
+      expect(contractPathway.name).to.equal(pathwayUnit.name);
+      expect(contractPathway.id).to.equal(pathwayUnit.id);
     });
   });
 
   describe("should fail to", function () {
-    it("create an ecosystem with invalid parameters", async function () {
-      await expect(
-        membership.createEcosystem(
-          { id: 0n, name: "Ecosystem" }
-        )
-      ).to.be.revertedWith("ecosystem id cannot be 0");
-
-      await expect(
-        membership.createEcosystem(
-          invalidEcosystemName
-        )
-      ).to.be.revertedWith("ecosystem name already registered");
-
-      await expect(
-        membership.createEcosystem(
-          invalidEcosystemId
-        )
-      ).to.be.revertedWith("ecosystem id already registered");
-
-      await expect(
-        membership
-          .connect(user1)
-          .createEcosystem(ecosystemUnit2)
-      ).to.be.revertedWithCustomError(
-        membership,
-        "AccessControlUnauthorizedAccount"
-      );
-    });
-
-    it("create a company with invalid parameters", async function () {
-      await expect(
-        membership.createCompany(
-          { id: 0n, name: "Company" }
-        )
-      ).to.be.revertedWith("company id cannot be 0");
-      
-      await expect(
-        membership.createCompany(
-          memberUnit
-        )
-      ).to.be.revertedWith("company id already registered");
-
-      await expect(
-        membership
-          .connect(user1)
-          .createCompany(memberUnit)
-      ).to.be.revertedWithCustomError(
-        membership,
-        "AccessControlUnauthorizedAccount"
-      );
-    });
-
-    it("create a brainstem with invalid parameters", async function() {
-      const ecosystemId = 1n;
-
+    it("create an brainstem with invalid parameters", async function () {
       await expect(
         membership.createBrainstem(
-          { id: 0n, name: "Brainstem" },
-          ecosystemId
+          { id: 0n, name: "Food service" }
         )
       ).to.be.revertedWith("brainstem id cannot be 0");
 
       await expect(
         membership.createBrainstem(
-          brainstemUnit,
-          123n
+          invalidBrainstemName
         )
-      ).to.be.revertedWith("ecosystem id not found");
+      ).to.be.revertedWith("brainstem name already registered");
 
       await expect(
         membership.createBrainstem(
-          brainstemUnit,
-          ecosystemId
+          invalidBrainstemId
         )
-      ).to.be.revertedWith("brainstem id already registered in ecosystem");
+      ).to.be.revertedWith("brainstem id already registered");
 
       await expect(
         membership
           .connect(user1)
-          .createBrainstem(brainstemUnit, ecosystemId)
+          .createBrainstem(brainstemUnit2)
+      ).to.be.revertedWithCustomError(
+        membership,
+        "AccessControlUnauthorizedAccount"
+      );
+    });
+
+    it("create a neuron with invalid parameters", async function () {
+      await expect(
+        membership.createNeuron(
+          { id: 0n, name: "Neuron" }
+        )
+      ).to.be.revertedWith("neuron id cannot be 0");
+      
+      await expect(
+        membership.createNeuron(
+          memberUnit
+        )
+      ).to.be.revertedWith("neuron id already registered");
+
+      await expect(
+        membership
+          .connect(user1)
+          .createNeuron(memberUnit)
+      ).to.be.revertedWithCustomError(
+        membership,
+        "AccessControlUnauthorizedAccount"
+      );
+    });
+
+    it("create a pathway with invalid parameters", async function() {
+      const brainstemId = 1n;
+
+      await expect(
+        membership.createPathway(
+          { id: 0n, name: "Pathway" },
+          brainstemId
+        )
+      ).to.be.revertedWith("pathway id cannot be 0");
+
+      await expect(
+        membership.createPathway(
+          pathwayUnit,
+          123n
+        )
+      ).to.be.revertedWith("brainstem id not found");
+
+      await expect(
+        membership.createPathway(
+          pathwayUnit,
+          brainstemId
+        )
+      ).to.be.revertedWith("pathway id already registered in brainstem");
+
+      await expect(
+        membership
+          .connect(user1)
+          .createPathway(pathwayUnit, brainstemId)
       ).to.be.revertedWithCustomError(
         membership,
         "AccessControlUnauthorizedAccount"

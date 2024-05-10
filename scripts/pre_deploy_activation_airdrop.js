@@ -2,7 +2,6 @@ const { exec } = require("child_process");
 const minimist = require("minimist");
 const argv = minimist(process.argv.slice(2));
 const args = argv._;
- 
 
 // Parse arguments
 if (!args.includes("--network")) {
@@ -11,14 +10,13 @@ if (!args.includes("--network")) {
 }
 
 const env = {
-  DEPLOY_ALL: args.includes("-all"),
   DEPLOY_LOCAL:args.includes("localhost"),
-  DEPLOY_MEMBERSHIP: args.includes("-membership"),
-  DEPLOY_ACCESS: args.includes("-access"),
-  DEPLOY_ASSETS: args.includes("-assets"),
+  DEPLOY_ALL: args.includes("-all"),
   DEPLOY_BRAINSTEM: args.includes("-brainstem"),
-  DEPLOY_EXECUTION: args.includes("-execution"),
-  DEPLOY_VALIDATION: args.includes("-validation"),
+  DEPLOY_PATHWAY: args.includes("-pathway"),
+  DEPLOY_NEURON: args.includes("-neuron"),
+  DEPLOY_ASSETS: args.includes("-asset"),
+  DEPLOY_EXECUTION: args.includes("-execution"), 
   ...process.env, // Include existing environment variables
 };
 
@@ -27,9 +25,9 @@ const network = args[args.indexOf("--network") + 1];
 if (!network || network === true || network.startsWith("-")) {
   console.error("Wrong network specified. Use the --network flag to specify one like: '--network localhost'.");
   process.exit(1);
-} 
+}
 
-const command = `npx hardhat run scripts/deploy_contracts.js --network ${network}`;
+const command = `npx hardhat run scripts/deploy_activation_airdrop.js --network ${network}`;
 
 // Execute the Hardhat script with environment variables
 exec(command, { env }, (error, stdout, stderr) => {

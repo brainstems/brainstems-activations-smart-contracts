@@ -1,9 +1,11 @@
 const hre = require("hardhat");
 const { admin, usdcToken, assetsConfigAddress, membershipConfigAddress, accessConfigAddress, executionConfigAddress } = require("./config");
+let localtest;
 
-async function main() { 
+async function main() {
   let assetsAddress, membershipAddress, accessAddress, executionAddress;
 
+  if (process.env.DEPLOY_LOCAL == "true") localtest = true;
   if (process.env.DEPLOY_ASSETS !== "true") assetsAddress = assetsConfigAddress;
   if (process.env.DEPLOY_MEMBERSHIP !== "true") membershipAddress = membershipConfigAddress;
   if (process.env.DEPLOY_ACCESS !== "true") accessAddress = accessConfigAddress;
@@ -62,15 +64,15 @@ async function deployMembershipContract(assetsAddress) {
 
   const address = await membership.getAddress();
   console.log("deployed to :", address);
-
-  try {
-    await hre.run(`verify:verify`, {
-      address: address,
-      constructorArguments: [],
-    });
+  if (!localtest) {
+    try {
+      await hre.run(`verify:verify`, {
+        address: address,
+        constructorArguments: [],
+      });
+    }
+    catch { }
   }
-  catch {}
-
   return address;
 }
 
@@ -89,14 +91,15 @@ async function deployExecutionContract(accessAddress, membershipAddress) {
 
   const address = await execution.getAddress();
   console.log("deployed to:", address);
-
-  try {
-    await hre.run(`verify:verify`, {
-      address: address,
-      constructorArguments: [],
-    });
+  if (!localtest) {
+    try {
+      await hre.run(`verify:verify`, {
+        address: address,
+        constructorArguments: [],
+      });
+    }
+    catch { }
   }
-  catch {}
 
   return address;
 }
@@ -116,14 +119,15 @@ async function deployAssetsContract() {
   const address = await assets.getAddress();
   console.log("deployed to:", address);
 
-  try {
-    await hre.run(`verify:verify`, {
-      address: address,
-      constructorArguments: [],
-    });
+  if (!localtest) {
+    try {
+      await hre.run(`verify:verify`, {
+        address: address,
+        constructorArguments: [],
+      });
+    }
+    catch { }
   }
-  catch {}
-
   return address;
 }
 
@@ -143,14 +147,15 @@ async function deployAccessContract(assetsAddress, membershipAddress) {
   const address = await access.getAddress();
   console.log("deployed to:", address);
 
-  try {
-    await hre.run(`verify:verify`, {
-      address: address,
-      constructorArguments: [],
-    });
+  if (!localtest) {
+    try {
+      await hre.run(`verify:verify`, {
+        address: address,
+        constructorArguments: [],
+      });
+    }
+    catch { }
   }
-  catch {}
-
   return address;
 }
 

@@ -14,11 +14,12 @@
     "test": "npx hardhat test",
     "size": "npx hardhat size-contracts",
     "slither": "slither . --filter-paths 'node_modules'",
-    "deploy-contracts": "node scripts/pre_deploy_contracts.js --"
+    "deploy-contracts": "node scripts/pre_deploy_contracts.js --",
+    "deploy-activation-airdrop": "node scripts/pre_deploy_activation_airdrop.js --"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/brainstems/brainstems-token-smart-contracts.git"
+    "url": "https://github.com/brainstems/brainstems-activations-smart-contracts"
   },
   "keywords": [
     "brainstems",
@@ -37,7 +38,7 @@
     "@openzeppelin/contracts-upgradeable": "^5.0.0",
     "@openzeppelin/hardhat-upgrades": "^2.5.0",
     "dotenv": "^16.3.1",
-    "ethers": "^6.9.1",
+    "ethers": "^6.12.1",
     "hardhat": "^2.19.0",
     "hardhat-contract-sizer": "^2.10.0",
     "minimist": "^1.2.8"

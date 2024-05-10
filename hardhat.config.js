@@ -4,8 +4,8 @@ require("hardhat-contract-sizer");
 
 require("dotenv").config();
 
-const MAINNET_PRIVATE_KEY = process.env.TESTNET_PRIVATE_KEY;
-const TESTNET_PRIVATE_KEY = process.env.MAINNET_PRIVATE_KEY;
+const TESTNET_PRIVATE_KEY = process.env.TESTNET_PRIVATE_KEY;
+const MAINNET_PRIVATE_KEY = process.env.MAINNET_PRIVATE_KEY;
 
 module.exports = {
   defaultNetwork: "hardhat",

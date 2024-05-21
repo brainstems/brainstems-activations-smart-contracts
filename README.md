@@ -152,3 +152,37 @@ npm run deploy-contracts -- --network localhost -membership -access -assets -exe
   The architecture was thought following the following thoughts diagram:
 
   ![Architecture](./Brainstems_Hierarchy.png)
+
+### Deployed Contracts
+#### Testnet (Avalanche Fuji)
+
+Assets Contract:
+
+Deployed to: 0xA56bB0BcCAD5DcC298F99eE56356435bbf28c88B
+Implementation: 0x4A845c8d954183FFaDfFE82ed093DE8599776780
+https://testnet.snowtrace.io/address/0x4A845c8d954183FFaDfFE82ed093DE8599776780#code
+Proxy: 0xA56bB0BcCAD5DcC298F99eE56356435bbf28c88B
+
+
+Membership Contract....
+Deployed to : 0xFbeA466BCEaA551Be7864966AABd641D98dA7C12
+Implementation: 0xa24F0ba9AB8D4dFA38875A710F5D18623CCA6d00
+https://testnet.snowtrace.io/address/0xa24F0ba9AB8D4dFA38875A710F5D18623CCA6d00#code
+Proxy: 0xFbeA466BCEaA551Be7864966AABd641D98dA7C12
+
+
+Access Contract....
+Deployed to: 0x4111028c22e13D25339614D0D8e9F3e2655724e4
+Implementation: 0x3364234de5DdE405b02244a56Ab418852BddC9DD
+https://testnet.snowtrace.io/address/0x3364234de5DdE405b02244a56Ab418852BddC9DD#code
+Proxy: 0x4111028c22e13D25339614D0D8e9F3e2655724e4
+
+Execution Contract....
+Deployed to: 0x51C0Fdc9B00bc4A740A8b101F5451eE202D8af18
+Implementation: 0x0045943010d59eBC8C0011A86f82f42eE667a105
+https://testnet.snowtrace.io/address/0x0045943010d59eBC8C0011A86f82f42eE667a105#code
+Proxy: 0x51C0Fdc9B00bc4A740A8b101F5451eE202D8af18
+
+#### Mainnet (Avalanche-C)
+
+Soon to be updated

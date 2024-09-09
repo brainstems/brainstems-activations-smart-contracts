@@ -1,5 +1,6 @@
 const hre = require("hardhat");
-
+const { uploadToInfura } = require('./pinata');
+const fs = require('fs');
 const {
   admin, usdcToken, assetsConfigAddress, membershipConfigAddress,
   accessConfigAddress, executionConfigAddress
@@ -11,6 +12,17 @@ let owner, user1, user2, user3, assets, access, assetId, baseAssetId, contributo
 
 async function main() {
   console.log(`stdout: Creation process started`);
+  // Upload metadata to IPFS via Pinata
+  try {
+    const metadataPath = './metadata/modelMetadata.json';
+    metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    ipfsHash = await uploadToInfura(metadata);
+    console.log(`stdout: Metadata uploaded to IPFS with hash ${ipfsHash}`);
+  } catch (error) {
+    console.error(`Error uploading metadata to IPFS: ${error}`);
+    throw error;
+  }
+
   const ROLE = ethers.id("DEFAULT_ADMIN_ROLE");
 
   [owner, user1, user2, user3] = await ethers.getSigners();
@@ -75,18 +87,9 @@ async function main() {
     creatorRate: 5000n,
     marketingRate: 2500n,
     presaleRate: 2500n,
-  };
-  ipfsHash = "bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7lly";
-  metadata = {
-    name: "Crypto Predictor Model",
-    version: 1n,
-    description: "Crypto Predictor Model using Dolphin Mistral 7bv0.2 + Context training",
-    fingerprint: ethers.randomBytes(32),
-    trained: true,
-    watermarkFingerprint: ethers.randomBytes(32),
-    performance: 50n,
-  };
-
+  }; 
+  
+  
   const tx = await assets.createAsset(assetId, baseAssetId, contributors, ipfsHash, metadata);
   await tx.wait();
   console.log(`stdout: Asset created`);
